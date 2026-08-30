@@ -1,0 +1,24 @@
+# Environnements — jamais versionnés. `.venv/` ne couvre PAS `.venv-train/` :
+# un motif sans joker ne matche que le nom exact.
+.venv/
+.venv*/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+.angular/
+
+# Secrets et fichiers déposés par les utilisateurs
+backend/.env
+backend/media/
+
+# Poids téléchargeables — reproductibles, pas des sources.
+# tn_ocr.onnx (3 Mo) reste versionné : c'est le livrable « modèle IA entraîné » du § 11.
+models/*.pt
+models/*.npz
+
+# Jeux d'images. Photos de personnes réelles : ni redistribuables, ni nécessaires
+# (training/fetch_lfw.py régénère faces_lfw, training/labels/*.csv gardent le travail).
+data/
+.DS_Store

@@ -1,0 +1,96 @@
+@startuml sequence-anpr
+title Diagramme de séquence — ANPR : lecture de plaque → décision d'accès → notification
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #2F4F6F
+  LifeLineBorderColor #2F4F6F
+  ParticipantBackgroundColor #F4F7FB
+  ParticipantBorderColor #2F4F6F
+}
+
+actor "Conducteur" as D
+participant "Caméra IP\n(cam-gate)" as Cam
+participant "run_camera" as Loop
+participant "AnprRecognizer" as Reco
+participant "PlateDetector\n(YOLO)" as YOLO
+participant "PlateOCR" as OCR
+participant "normalize()" as Norm
+participant "Confirmer" as Conf
+participant "API Django\n/api/events/" as API
+database "MySQL" as DB
+actor "Administrateur" as Admin
+
+D -> Cam : le véhicule se présente au portail
+Cam -> Loop : trame RTSP
+activate Loop
+
+Loop -> Reco : ~__call~__(frame)
+activate Reco
+
+Reco -> YOLO : detect(frame)
+activate YOLO
+YOLO --> Reco : [(bbox, conf >= 0.35)]
+deactivate YOLO
+note right of YOLO
+  La plaque est détectée directement,
+  sans passer par la détection du véhicule :
+  une étape de moins, sans perte à
+  la distance d'un portail.
+end note
+
+Reco -> OCR : read(frame, bbox)
+activate OCR
+OCR -> OCR : recadrage + niveaux de gris
+OCR -> OCR : lecture (modèle spécialisé plaques)
+OCR -> Norm : normalize(texte brut)
+activate Norm
+Norm -> Norm : suppression espaces et tirets
+Norm -> Norm : correction O→0, I→1, S→5, B→8
+Norm --> OCR : "198TN4521" ou null
+deactivate Norm
+OCR --> Reco : (plaque, score_ocr)
+deactivate OCR
+
+alt score_ocr < 0.75
+  Reco -> Reco : lecture abandonnée
+else lecture fiable
+  Reco --> Loop : [("access", "198TN4521", conf, bbox)]
+end
+deactivate Reco
+
+Loop -> Conf : accept("cam-gate:access:198TN4521")
+activate Conf
+Conf --> Loop : true (3 votes / 5 s)
+deactivate Conf
+
+Loop -> API : POST /api/events/\n{kind: "access", subject: "198TN4521", snapshot}
+activate API
+API -> DB : SELECT * FROM Vehicle\nWHERE plaque = '198TN4521'
+activate DB
+DB --> API : véhicule ou rien
+deactivate DB
+
+alt véhicule connu et autorise = true
+  API -> DB : INSERT AccessLog (statut = 'autorise')
+  API --> Loop : 201 {"status": "autorise"}
+else plaque inconnue ou bloquée
+  API -> DB : INSERT AccessLog (statut = 'refuse', vehicle = null)
+  API -> DB : INSERT Alert (kind = 'refused_plate')
+  API -> Admin : e-mail « Plaque refusée »
+  API --> Loop : 201 {"status": "refuse"}
+  note right of API
+    L'alerte est écrite en base d'abord,
+    l'e-mail ensuite : un serveur SMTP
+    indisponible ne doit pas faire
+    disparaître l'événement.
+  end note
+end
+deactivate API
+deactivate Loop
+
+Admin -> API : consulte le tableau de bord
+API --> Admin : alertes + photo de la plaque lue
+
+@enduml

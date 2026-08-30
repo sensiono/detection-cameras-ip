@@ -1,0 +1,91 @@
+@startuml cas-utilisation
+!pragma layout smetana
+title Diagramme de cas d'utilisation — Système intelligent de détection par caméras IP
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #F4F7FB
+  BorderColor #2F4F6F
+}
+skinparam actor {
+  BackgroundColor #FFFFFF
+  BorderColor #2F4F6F
+}
+left to right direction
+
+actor "Agent de supervision" as Agent
+actor "Administrateur" as Admin
+actor "Caméra IP" as Cam
+actor "Service de messagerie" as Mail
+
+Admin --|> Agent
+
+rectangle "Système intelligent de détection" {
+
+  package "Traitement temps réel" {
+    usecase "Détecter un visage" as UC11
+    usecase "Vérifier la vivacité\n(anti-usurpation)" as UC18
+    usecase "Reconnaître une personne" as UC12
+    usecase "Enregistrer la présence" as UC13
+    usecase "Détecter et lire une plaque" as UC14
+    usecase "Décider de l'autorisation" as UC15
+    usecase "Journaliser l'accès" as UC16
+    usecase "Notifier l'administrateur" as UC17
+  }
+
+  package "Supervision" {
+    usecase "S'authentifier" as UC0
+    usecase "Consulter le tableau de bord" as UC1
+    usecase "Consulter les présences" as UC2
+    usecase "Générer un rapport\n(PDF / Excel)" as UC3
+    usecase "Consulter les entrées / sorties" as UC4
+    usecase "Consulter et acquitter\nles alertes" as UC5
+    usecase "Gérer les véhicules autorisés" as UC7
+    usecase "Gérer les utilisateurs" as UC8
+    usecase "Enrôler un visage" as UC9
+  }
+}
+
+Cam --> UC11
+Cam --> UC14
+
+UC11 ..> UC18 : <<include>>
+UC18 ..> UC12 : <<include>>
+UC18 <.. UC17 : <<extend>>
+UC12 ..> UC13 : <<include>>
+UC12 <.. UC17 : <<extend>>
+
+UC14 ..> UC15 : <<include>>
+UC15 ..> UC16 : <<include>>
+UC15 <.. UC17 : <<extend>>
+
+UC17 --> Mail
+
+Agent --> UC1
+Agent --> UC2
+Agent --> UC3
+Agent --> UC4
+Agent --> UC5
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+
+UC1 ..> UC0 : <<include>>
+UC3 ..> UC0 : <<include>>
+UC7 ..> UC0 : <<include>>
+
+note right of UC17
+  Étend le cas nominal lorsque la plaque
+  est refusée, lorsqu'un visage détecté ne
+  correspond à personne, ou lorsqu'une photo
+  est présentée à la place d'un visage.
+end note
+
+note right of UC15
+  L'autorisation est décidée par la base
+  de données, jamais par la reconnaissance.
+end note
+
+@enduml

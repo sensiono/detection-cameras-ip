@@ -1,0 +1,78 @@
+/* One small stylesheet instead of a UI framework: the dashboard is tables, tiles
+   and a form, and none of that needs a dependency. */
+:root {
+  --bg: #f5f6f8;
+  --surface: #fff;
+  --fg: #1c2430;
+  --muted: #6b7684;
+  --ok: #2f9e5e;
+  --warn: #d99411;
+  --bad: #cc3b3b;
+  --line: #e3e6ea;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161a1f; --surface: #1f242b; --fg: #e8ebef; --muted: #93a0ad; --line: #2c333c; }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+h1 { font-size: 1.4rem; margin: 0 0 .3rem; }
+h2 { font-size: 1.05rem; margin: 0 0 .6rem; }
+.muted { color: var(--muted); font-size: .85rem; }
+.error { color: var(--bad); font-size: .85rem; }
+.spacer { flex: 1; }
+
+table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+}
+th, td { padding: .6rem .8rem; text-align: left; border-bottom: 1px solid var(--line); }
+th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+
+.filters { display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin-top: 1rem; }
+.filters label { display: grid; gap: .2rem; font-size: .8rem; color: var(--muted); }
+
+input, select {
+  padding: .45rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+}
+
+button {
+  padding: .45rem .9rem;
+  border: none;
+  border-radius: 7px;
+  background: var(--fg);
+  color: var(--surface);
+  font: inherit;
+  cursor: pointer;
+}
+button:disabled { opacity: .6; cursor: default; }
+button.danger { background: var(--bad); color: #fff; }
+
+.pill {
+  display: inline-block;
+  padding: .1rem .55rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  background: color-mix(in srgb, var(--ok) 18%, transparent);
+  color: var(--ok);
+}
+.pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.pill.bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }

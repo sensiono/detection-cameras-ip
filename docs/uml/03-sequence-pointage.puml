@@ -1,0 +1,119 @@
+@startuml sequence-pointage
+title Diagramme de séquence — Pointage : détection → reconnaissance → enregistrement
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor #2F4F6F
+  LifeLineBorderColor #2F4F6F
+  ParticipantBackgroundColor #F4F7FB
+  ParticipantBorderColor #2F4F6F
+}
+
+actor "Personne" as P
+participant "Caméra IP\n(cam-entrance)" as Cam
+participant "RTSPStream" as Stream
+participant "run_camera" as Loop
+participant "AttendanceRecognizer" as Reco
+participant "FaceEngine\n(InsightFace)" as Engine
+participant "LivenessChecker\n(MiniFASNet ONNX)" as Live
+participant "FaceIndex" as Index
+participant "Confirmer" as Conf
+participant "HttpSink" as Sink
+participant "API Django\n/api/events/" as API
+database "MySQL" as DB
+
+P -> Cam : se présente devant la caméra
+Cam -> Stream : flux RTSP (H.264)
+activate Stream
+note right of Stream
+  Décodage dans un thread séparé :
+  si l'inférence est plus lente que la
+  caméra, les trames anciennes sont
+  abandonnées, pas mises en file.
+end note
+
+loop pour 1 trame sur frame_stride (= 3)
+  Stream -> Loop : frame (la plus récente)
+  activate Loop
+  Loop -> Reco : ~__call~__(frame)
+  activate Reco
+
+  Reco -> Engine : detect(frame)
+  activate Engine
+  Engine -> Engine : détection + alignement
+  Engine -> Engine : embedding ArcFace (512-d)
+  Engine --> Reco : FaceDetection[bbox, score, embedding]
+  deactivate Engine
+
+  alt score de détection < 0.60
+    Reco -> Reco : trame rejetée (floue ou profil)
+  else visage exploitable
+    Reco -> Live : score(frame, bbox)
+    activate Live
+    Live -> Live : recadrage large (x2.7) puis 80x80
+    Live --> Reco : probabilité de vivacité
+    deactivate Live
+
+    alt vivacité < 0.60
+      Reco --> Loop : [("spoof_attempt", "", 1 - vivacité, bbox)]
+      note right of Live
+        La galerie n'est même pas consultée :
+        une photo ne doit jamais pouvoir
+        atteindre une identité.
+      end note
+    else visage réel
+      Reco -> Index : search(embedding, threshold=0.42)
+    activate Index
+    Index -> Index : similarité cosinus\n(produit matriciel N x 512)
+      Index --> Reco : (user_id, score) ou (null, score)
+      deactivate Index
+    end
+  end
+
+  Reco --> Loop : [("attendance", user_id, score, bbox)]
+  deactivate Reco
+
+  Loop -> Conf : accept("cam-entrance:attendance:user_id")
+  activate Conf
+  alt moins de 3 votes dans la fenêtre de 5 s
+    Conf --> Loop : false
+    note right of Conf : Un faux positif isolé\nn'atteint jamais la base.
+  else identité confirmée
+    Conf -> Conf : démarre le silence de 300 s
+    Conf --> Loop : true
+  end
+  deactivate Conf
+
+  opt identité confirmée
+    Loop -> Loop : crop_b64(frame, bbox)
+    Loop -> Sink : emit(Event)
+    activate Sink
+    Sink -> API : POST /api/events/\nAuthorization: Token ...
+    activate API
+    API -> API : EventSerializer.validate()
+    API -> API : handle_event()
+
+    alt première détection du jour
+      API -> DB : INSERT Attendance\n(check_in, statut)
+      DB --> API : id
+      API --> Sink : 201 {"status": "checked_in"}
+    else déjà pointé aujourd'hui
+      API -> DB : UPDATE Attendance\nSET check_out
+      DB --> API : ok
+      API --> Sink : 201 {"status": "checked_out"}
+    end
+    deactivate API
+    deactivate Sink
+  end
+  deactivate Loop
+end
+
+deactivate Stream
+
+note over Loop, DB
+  Le service IA ne décide de rien : il envoie « j'ai vu user_id ».
+  Le retard, l'absence et l'unicité de la ligne sont décidés côté base.
+end note
+
+@enduml

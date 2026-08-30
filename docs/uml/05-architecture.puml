@@ -1,0 +1,88 @@
+@startuml architecture
+!pragma layout smetana
+title Diagramme d'architecture (déploiement) — Système intelligent de détection
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #F4F7FB
+  BorderColor #2F4F6F
+}
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #2F4F6F
+}
+skinparam database {
+  BackgroundColor #F4F7FB
+  BorderColor #2F4F6F
+}
+
+node "Réseau caméras (VLAN dédié)" as Net {
+  node "Caméra IP — entrée\ncam-entrance" as Cam1
+  node "Caméra IP — portail\ncam-gate" as Cam2
+}
+
+node "Serveur IA\n(GPU CUDA ou CPU)" as AIHost {
+  component "Processus vision\ncam-entrance" as P1
+  component "Processus vision\ncam-gate" as P2
+  artifact "buffalo_l\n(ArcFace)" as M1
+  artifact "plate_yolo.pt" as M2
+  artifact "faces.npz\n(galerie d'empreintes)" as M3
+  artifact "antispoof.onnx\n(MiniFASNet)" as M4
+
+  P1 ..> M1
+  P1 ..> M3
+  P1 ..> M4
+  P2 ..> M2
+}
+
+node "Serveur applicatif" as AppHost {
+  component "Django REST\n(Gunicorn)" as Django
+  folder "media/\nphotos et captures" as Media
+  Django ..> Media
+}
+
+database "MySQL 8" as DB {
+  artifact "users, attendance,\nvehicles, access_logs, alerts" as Tables
+}
+
+node "Poste de supervision" as Client {
+  component "Navigateur" as Browser
+  component "Application Angular\n(servie par nginx)" as Ng
+  Browser ..> Ng
+}
+
+node "Serveur SMTP" as Smtp
+
+Cam1 --> P1 : <<RTSP/TCP 554>>\nflux H.264
+Cam2 --> P2 : <<RTSP/TCP 554>>\nflux H.264
+
+P1 --> Django : <<HTTPS>>\nPOST /api/events/\nAuthorization: Token
+P2 --> Django : <<HTTPS>>\nPOST /api/events/
+
+Django --> DB : <<TCP 3306>>\nORM Django
+Django --> Smtp : <<SMTP>>\nalertes d'accès refusé
+
+Ng --> Django : <<HTTPS>>\nREST + JWT
+
+note bottom of AIHost
+  Un processus par caméra : elles sont
+  indépendantes, et un flux qui tombe ne doit
+  pas entraîner les autres. Unité systemd
+  ou service docker-compose distinct.
+end note
+
+note bottom of Django
+  Propriétaire exclusif de la base.
+  Le service IA n'a aucun identifiant MySQL :
+  la seule chose qu'il sait faire est
+  POST /api/events/.
+end note
+
+note right of M3
+  Empreintes biométriques (vecteurs 512-d),
+  jamais les photos d'origine. Un vecteur ne
+  permet pas de reconstruire un visage.
+end note
+
+@enduml

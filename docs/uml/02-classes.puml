@@ -1,0 +1,213 @@
+@startuml classes
+!pragma layout smetana
+title Diagramme de classes — Service IA et modèle de données
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #F4F7FB
+  BorderColor #2F4F6F
+  ArrowColor #2F4F6F
+}
+
+package "Service IA (vision)" #FDFDFD {
+
+  class RTSPStream {
+    - url : str
+    - reconnect_s : float
+    + frames(stride: int) : Iterator<Frame>
+    -- 
+    Lit le flux dans un thread et
+    ne sert que la trame la plus récente.
+  }
+
+  interface Recognizer <<Protocol>> {
+    + ~__call~__(frame) : List<Sighting>
+  }
+
+  class AttendanceRecognizer {
+    - threshold : float = 0.42
+    + ~__call~__(frame) : List<Sighting>
+  }
+
+  class AnprRecognizer {
+    - min_ocr_score : float = 0.75
+    + ~__call~__(frame) : List<Sighting>
+  }
+
+  class FaceEngine {
+    - model : str = "buffalo_l"
+    - min_det_score : float = 0.60
+    + detect(frame) : List<FaceDetection>
+  }
+
+  class LivenessChecker {
+    - scale : float = 2.7
+    - threshold : float = 0.60
+    + score(frame, bbox) : float
+    --
+    Recadrage large : l'indice d'usurpation
+    est au bord (cadre du téléphone, papier),
+    pas sur le visage lui-même.
+  }
+
+  class FaceIndex {
+    - labels : List<str>
+    - matrix : ndarray[N, 512]
+    + add(label, embedding)
+    + search(embedding, threshold) : (str, float)
+    + save(path) / load(path)
+  }
+
+  class FaceDetection <<dataclass>> {
+    + bbox : BBox
+    + score : float
+    + embedding : ndarray[512]
+  }
+
+  class PlateDetector {
+    - conf : float = 0.35
+    + detect(frame) : List<(BBox, float)>
+  }
+
+  class PlateOCR {
+    + read(frame, bbox) : (str, float)
+  }
+
+  class Confirmer {
+    - votes : int = 3
+    - window_s : float = 5.0
+    - cooldown_s : float = 300.0
+    + accept(key: str) : bool
+    --
+    Vote glissant + silence :
+    supprime les faux positifs
+    et les doublons.
+  }
+
+  class Event <<dataclass>> {
+    + kind : {attendance, access, unknown_face}
+    + camera_id : str
+    + subject : str
+    + confidence : float
+    + at : datetime
+    + snapshot : str
+    + as_payload() : dict
+  }
+
+  interface EventSink <<Protocol>> {
+    + emit(event: Event)
+  }
+
+  class HttpSink {
+    - url : str
+    - token : str
+    + emit(event: Event)
+    --
+    Seul point de contact avec le backend :
+    POST /api/events/. Aucun accès direct
+    à MySQL depuis le service IA.
+  }
+
+  class LogSink {
+    + emit(event: Event)
+  }
+
+  Recognizer <|.. AttendanceRecognizer
+  Recognizer <|.. AnprRecognizer
+  EventSink <|.. HttpSink
+  EventSink <|.. LogSink
+
+  AttendanceRecognizer --> FaceEngine
+  AttendanceRecognizer --> LivenessChecker
+  AttendanceRecognizer --> FaceIndex
+  AnprRecognizer --> PlateDetector
+  AnprRecognizer --> PlateOCR
+  FaceEngine ..> FaceDetection : produit
+  RTSPStream --> Recognizer : trames
+  Recognizer ..> Event : produit
+  Confirmer ..> Event : filtre
+  EventSink ..> Event : émet
+}
+
+package "Backend (Django / MySQL)" #FDFDFD {
+
+  enum Role {
+    admin
+    supervisor
+    member
+  }
+
+  class User {
+    + id : BigInt
+    + username : str
+    + nom : str
+    + prenom : str
+    + photo : Image
+    + role : Role
+  }
+
+  class Attendance {
+    + id : BigInt
+    + date : Date
+    + check_in : Time
+    + check_out : Time
+    + statut : {present, late}
+    + camera_id : str
+    + confidence : float
+    + snapshot : Image
+    --
+    Contrainte : unique(user, date)
+  }
+
+  class Vehicle {
+    + id : BigInt
+    + plaque : str <<unique>>
+    + proprietaire : str
+    + type : {bus, car, other}
+    + autorise : bool
+  }
+
+  class AccessLog {
+    + id : BigInt
+    + plaque : str
+    + date : Date
+    + heure : Time
+    + statut : {autorise, refuse}
+    + camera_id : str
+    + confidence : float
+    + snapshot : Image
+  }
+
+  class Alert {
+    + id : BigInt
+    + kind : {refused_plate, unknown_face}
+    + message : str
+    + camera_id : str
+    + snapshot : Image
+    + created_at : DateTime
+    + seen : bool
+  }
+
+  User "1" *-- "0..*" Attendance
+  User "0..1" o-- "0..*" Vehicle : propriétaire
+  Vehicle "0..1" o-- "0..*" AccessLog : reconnu comme
+  AccessLog ..> Alert : crée si refusé
+
+  User --> Role
+}
+
+note bottom of AccessLog
+  vehicle == null : plaque inconnue.
+  Ce n'est pas une erreur, c'est
+  précisément le cas à surveiller.
+end note
+
+note bottom of FaceIndex
+  Aucun entraînement : le modèle pré-entraîné
+  projette un visage en vecteur unitaire.
+  Enrôler une personne = stocker un vecteur.
+end note
+
+@enduml

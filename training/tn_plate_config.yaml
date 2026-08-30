@@ -1,0 +1,13 @@
+# Plaque civile tunisienne : "NNN تونس NNNN".
+# L'alphabet est réduit aux dix chiffres plus T et N : le modèle global échouait en
+# partie parce que rien ne l'empêchait d'écrire J, P ou C à la place de تونس.
+# Treize classes au lieu de trente-sept, c'est aussi ce qui rend l'apprentissage
+# possible avec quelques centaines de plaques réelles.
+max_plate_slots: 9
+alphabet: '0123456789TN_'
+pad_char: '_'
+img_height: 64
+img_width: 128
+keep_aspect_ratio: false
+interpolation: linear
+image_color_mode: rgb

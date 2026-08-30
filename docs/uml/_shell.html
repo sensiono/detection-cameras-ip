@@ -1,0 +1,79 @@
+<title>Planches UML Caméras IP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root {
+    --paper:#F5F7F9; --surface:#FFFFFF; --ink:#16202C; --ink-2:#5A6775; --plate:#2F4F6F; --accent:#A0761C; --rule:#DCE1E7;
+    --mount:#FFFFFF; --mount-rule:#D3DAE2;
+    --serif:"IBM Plex Serif",Georgia,serif;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#0F141B; --surface:#181F29; --ink:#E3E9EF; --ink-2:#94A1AF;
+      --plate:#82A8CE; --accent:#D2A34A; --rule:#28313D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#0F141B; --surface:#181F29; --ink:#E3E9EF; --ink-2:#94A1AF;
+    --plate:#82A8CE; --accent:#D2A34A; --rule:#28313D;
+  }
+
+  *,*::before,*::after { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:76rem; margin:0 auto; padding:3.5rem 1.5rem 5rem; display:flex; flex-direction:column; gap:3.5rem; }
+
+  .masthead { display:flex; flex-direction:column; gap:1rem; border-bottom:2px solid var(--plate); padding-bottom:1.75rem; }
+  .kicker { font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(1.9rem,4vw,2.7rem); line-height:1.15; margin:0; text-wrap:balance; }
+  .standfirst { margin:0; max-width:60ch; color:var(--ink-2); }
+
+  .toc { list-style:none; margin:0; padding:0; display:grid; gap:1px; background:var(--rule);
+          border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
+  .toc a { display:grid; grid-template-columns:5.5rem 1fr auto; gap:1rem; align-items:baseline;
+            padding:.85rem 1.1rem; background:var(--surface); color:var(--ink); text-decoration:none; }
+  .toc a:hover, .toc a:focus-visible { background:var(--paper); color:var(--plate); outline:none; }
+  .toc a:focus-visible { box-shadow:inset 3px 0 0 var(--accent); }
+  .tnum { font-family:var(--mono); font-size:.78rem; color:var(--accent); letter-spacing:.1em; }
+  .ttitle { font-family:var(--serif); font-size:1.02rem; }
+  .tref { font-family:var(--mono); font-size:.72rem; color:var(--ink-2); }
+
+  .plate { display:flex; flex-direction:column; gap:1.25rem; scroll-margin-top:1.5rem; }
+  .plate-head { display:flex; flex-direction:column; gap:.55rem; max-width:68ch;
+                 border-left:3px solid var(--plate); padding-left:1.1rem; }
+  .eyebrow { margin:0; display:flex; gap:.9rem; align-items:baseline; flex-wrap:wrap;
+              font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
+  .eyebrow .num { color:var(--accent); }
+  .eyebrow .ref { color:var(--ink-2); }
+  .plate h2 { font-family:var(--serif); font-weight:600; font-size:1.5rem; margin:0; text-wrap:balance; }
+  .note { margin:0; color:var(--ink-2); }
+  .note em { color:var(--ink); font-style:italic; }
+  code { font-family:var(--mono); font-size:.85em; color:var(--plate); }
+  .src { margin:0; }
+  .src code { color:var(--ink-2); }
+
+  .mount { margin:0; display:flex; flex-direction:column; gap:.6rem; }
+  .frame { background:var(--mount); border:1px solid var(--mount-rule); border-radius:3px;
+            padding:1.25rem; overflow:auto; max-height:82vh; }
+  .plate-svg { display:block; width:100%; height:auto; }
+  .frame[data-full="true"] .plate-svg { width:auto; max-width:none; height:auto; }
+
+  figcaption { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+  .zoom { font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase;
+           padding:.42rem .85rem; border:1px solid var(--rule); border-radius:3px;
+           background:var(--surface); color:var(--ink); cursor:pointer; }
+  .zoom:hover { border-color:var(--plate); color:var(--plate); }
+  .zoom[aria-pressed="true"] { background:var(--plate); border-color:var(--plate); color:var(--surface); }
+  .zoom:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .hint { font-size:.82rem; color:var(--ink-2); }
+
+  footer { border-top:1px solid var(--rule); padding-top:1.5rem; color:var(--ink-2); font-size:.88rem; max-width:66ch; }
+  footer strong { color:var(--ink); font-weight:600; }
+</style>
+

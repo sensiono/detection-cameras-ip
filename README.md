@@ -8,6 +8,7 @@ Three parts. `vision/` recognises, `backend/` decides and stores, `frontend/` sh
 * **`docs/uml/`** — the five UML diagrams of §8, generated from PlantUML sources. See [docs/uml/README.md](docs/uml/README.md).
 * **`training/`** — how the Tunisian OCR model was trained, and how to redo it. See [training/README.md](training/README.md).
 * **`docs/machine-gpu.md`** — running the training and the evaluations on a CUDA machine.
+* **`docs/cahier-des-charges-v2.md`** — le cahier des charges mis à jour : réalisé, écarts justifiés, manques restants.
 
 ```
 caméras IP ──RTSP──► vision ──HTTP──► Django ──► MySQL

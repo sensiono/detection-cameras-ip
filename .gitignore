@@ -13,10 +13,7 @@ dist/
 backend/.env
 backend/media/
 
-# Poids téléchargeables — reproductibles, pas des sources.
-# tn_ocr.onnx (3 Mo) reste versionné : c'est le livrable « modèle IA entraîné » du § 11.
-models/*.pt
-models/*.npz
+
 
 data/
 .DS_Store

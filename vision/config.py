@@ -9,8 +9,9 @@ from pydantic import BaseModel, Field
 
 class CameraCfg(BaseModel):
     id: str
-    url: str
+    url: str | int
     task: Literal["attendance", "anpr"]
+
 
 
 class LivenessCfg(BaseModel):

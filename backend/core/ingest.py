@@ -7,8 +7,10 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
-from .models import AccessLog, Alert, Attendance, User, Vehicle
+from .events_bus import event_bus
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, User, Vehicle
 from .notify import raise_alert
+
 
 log = logging.getLogger(__name__)
 
@@ -24,18 +26,46 @@ def handle_event(data: dict) -> dict:
     at = timezone.localtime(data["at"])
     kind = data["kind"]
     if kind == "attendance":
-        return _attendance(data, at)
-    if kind == "access":
-        return _access(data, at)
-    return _alert_only(data, kind)
+        res = _attendance(data, at)
+    elif kind == "access":
+        res = _access(data, at)
+    else:
+        res = _alert_only(data, kind)
+
+    # Broadcast to connected SSE frontend clients
+    event_bus.broadcast("update", {"kind": kind, "result": res, "camera_id": data.get("camera_id")})
+    from .views import bump_revision
+    bump_revision()
+    return res
+
+
 
 
 def _attendance(data: dict, at: datetime) -> dict:
-    subject = data["subject"].removeprefix("user_")  # tolerate both id forms
-    user = User.objects.filter(pk=subject).first()
+    raw_subject = data["subject"]
+    subject = raw_subject.removeprefix("user_")  # tolerate both id forms
+
+    user = None
+    if str(subject).isdigit():
+        user = User.objects.filter(pk=int(subject)).first()
     if user is None:
-        log.warning("attendance for unknown user %s", data["subject"])
-        return {"status": "ignored", "reason": "unknown user"}
+        user = User.objects.filter(username__iexact=subject).first()
+    if user is None:
+        user = User.objects.filter(username__iexact=raw_subject).first()
+    if user is None:
+        if not str(subject).isdigit() and len(subject) > 0:
+            user = User.objects.create(
+                username=subject,
+                nom=subject.capitalize(),
+                prenom="",
+                role=User.Role.MEMBER,
+            )
+            log.info("auto-created member account for enrolled subject: %s", subject)
+        else:
+            log.warning("attendance for unknown user %s", data["subject"])
+            return {"status": "ignored", "reason": "unknown user"}
+
+
 
     statut = Attendance.Status.LATE if at.time() > _late_after() else Attendance.Status.PRESENT
     row, created = Attendance.objects.get_or_create(
@@ -50,11 +80,34 @@ def _attendance(data: dict, at: datetime) -> dict:
         },
     )
     if created:
+        AttendanceAudit.objects.create(
+            attendance=row,
+            user=user,
+            date=at.date(),
+            heure=at.time(),
+            event_type=AttendanceAudit.EventType.CHECK_IN,
+            camera_id=data["camera_id"],
+            confidence=data["confidence"],
+            snapshot=data.get("snapshot"),
+        )
         return {"status": "checked_in", "attendance": row.id, "statut": row.statut}
+
     # Any later sighting is a departure until a further one replaces it.
     row.check_out = at.time()
     row.save(update_fields=["check_out"])
+
+    AttendanceAudit.objects.create(
+        attendance=row,
+        user=user,
+        date=at.date(),
+        heure=at.time(),
+        event_type=AttendanceAudit.EventType.DEPARTURE_UPDATE,
+        camera_id=data["camera_id"],
+        confidence=data["confidence"],
+        snapshot=data.get("snapshot"),
+    )
     return {"status": "checked_out", "attendance": row.id}
+
 
 
 def _access(data: dict, at: datetime) -> dict:
@@ -86,10 +139,15 @@ def _access(data: dict, at: datetime) -> dict:
 _ALERTS = {
     "unknown_face": (Alert.Kind.UNKNOWN_FACE, "Visage non reconnu"),
     "spoof_attempt": (Alert.Kind.SPOOF_ATTEMPT, "Visage présenté sur photo ou écran"),
+    "signal_loss": (Alert.Kind.SIGNAL_LOSS, "Perte de signal vidéo RTSP"),
+    "tamper_attempt": (Alert.Kind.TAMPER_ATTEMPT, "Obstruction / Sabotage caméra"),
 }
 
 
 def _alert_only(data: dict, kind: str) -> dict:
-    alert_kind, message = _ALERTS[kind]
-    alert = raise_alert(alert_kind, message, data["camera_id"], data.get("snapshot"))
+    default_msg = f"Alerte système: {kind}"
+    alert_kind, message = _ALERTS.get(kind, (kind, default_msg))
+    custom_msg = data.get("subject") or message
+    alert = raise_alert(alert_kind, custom_msg, data["camera_id"], data.get("snapshot"))
     return {"status": "alert", "alert": alert.id}
+

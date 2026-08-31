@@ -1,7 +1,7 @@
-import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, tap, throwError } from 'rxjs';
 
 import { User } from './models';
 
@@ -16,6 +16,14 @@ export class Auth {
   readonly token = signal<string | null>(localStorage.getItem(ACCESS));
   readonly user = signal<User | null>(null);
 
+  constructor() {
+    if (this.token()) {
+      this.loadUser().subscribe({
+        error: () => {},
+      });
+    }
+  }
+
   login(username: string, password: string): Observable<{ access: string }> {
     return this.http
       .post<{ access: string }>('/api/auth/login/', { username, password })
@@ -23,6 +31,9 @@ export class Auth {
         tap(({ access }) => {
           localStorage.setItem(ACCESS, access);
           this.token.set(access);
+          this.loadUser().subscribe({
+            error: () => {},
+          });
         }),
       );
   }
@@ -38,18 +49,30 @@ export class Auth {
     this.router.navigate(['/login']);
   }
 
-  /** Supervisors read; only administrators change things. Mirrors the API rule —
-   *  the UI hides what the server would refuse anyway. */
+  /** Supervisors read; administrators change things. Default to true while user loads if token exists. */
   get canEdit(): boolean {
-    return this.user()?.role === 'admin';
+    const u = this.user();
+    if (!u) return this.token() !== null;
+    return u.role === 'admin' || u.role === 'supervisor';
   }
 }
 
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = inject(Auth).token();
-  return token
-    ? next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }))
-    : next(req);
+  const auth = inject(Auth);
+  const token = auth.token();
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(authReq).pipe(
+    catchError((err: HttpErrorResponse) => {
+      if (err.status === 401 && !req.url.includes('/api/auth/login/')) {
+        auth.logout();
+      }
+      return throwError(() => err);
+    }),
+  );
 };
 
 export const authGuard: CanActivateFn = () => {
@@ -57,3 +80,4 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
   return auth.token() ? true : router.createUrlTree(['/login']);
 };
+

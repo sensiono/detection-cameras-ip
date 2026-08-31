@@ -14,12 +14,24 @@ import numpy as np
 
 from .plates.normalize import is_recognised, normalize
 
-IMAGES = ("*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG")
+IMAGES = ("*.jpg", "*.jpeg", "*.png", "*.JPG", "*.JPEG", "*.PNG", "*.webp", "*.bmp")
+
+
+def read_image(path: Path | str) -> np.ndarray | None:
+    """Robust image reader supporting Unicode/accented paths on Windows."""
+    try:
+        data = np.fromfile(str(path), dtype=np.uint8)
+        if data.size == 0:
+            return None
+        return cv2.imdecode(data, cv2.IMREAD_COLOR)
+    except Exception:
+        return None
 
 
 def images_in(folder: str | Path) -> list[Path]:
     root = Path(folder)
-    return sorted(p for pattern in IMAGES for p in root.glob(pattern))
+    return sorted(set(p for pattern in IMAGES for p in root.glob(pattern)))
+
 
 
 def expected_plate(path: Path) -> str | None:
@@ -51,7 +63,7 @@ def evaluate_plates(detector, ocr, folder: str | Path) -> list[PlateResult]:
     """Detect and read every photo in `folder`, one result per file."""
     results = []
     for path in images_in(folder):
-        image = cv2.imread(str(path))
+        image = read_image(path)
         if image is None:
             continue
         boxes = detector.detect(image)
@@ -63,6 +75,7 @@ def evaluate_plates(detector, ocr, folder: str | Path) -> list[PlateResult]:
         text, score = ocr.read(image, bbox)
         results.append(PlateResult(path, expected_plate(path), True, text, score))
     return results
+
 
 
 def parse_voc(path: Path) -> list[tuple[int, int, int, int]]:
@@ -122,7 +135,7 @@ def evaluate_detection(detector, folder: str | Path, iou_threshold: float = 0.5)
         if not xml_path.exists():
             continue
         truth = parse_voc(xml_path)
-        image = cv2.imread(str(image_path))
+        image = read_image(image_path)
         if image is None or not truth:
             continue
         predicted = [bbox for bbox, _ in detector.detect(image)]
@@ -186,7 +199,7 @@ def score_gallery(engine, folder: str | Path) -> FaceScores:
     for person in sorted(p for p in Path(folder).iterdir() if p.is_dir()):
         vectors = []
         for path in images_in(person):
-            image = cv2.imread(str(path))
+            image = read_image(path)
             if image is None:
                 continue
             faces = engine.detect(image)
@@ -198,6 +211,7 @@ def score_gallery(engine, folder: str | Path) -> FaceScores:
         mean = np.mean(vectors[:half], axis=0)
         enrolled[person.name] = mean / np.linalg.norm(mean)
         probes.extend((person.name, v) for v in vectors[half:])
+
 
     genuine, impostor = [], []
     for name, probe in probes:

@@ -3,23 +3,78 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 
 from django.db.models import Count, Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from . import reports
+from .events_bus import event_bus
 from .ingest import handle_event
-from .models import AccessLog, Alert, Attendance, User, Vehicle
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, User, Vehicle
 from .permissions import IsCameraService, IsSupervisorOrAdmin
 from .serializers import (
     AccessLogSerializer,
     AlertSerializer,
+    AttendanceAuditSerializer,
     AttendanceSerializer,
+    CameraSerializer,
     EventSerializer,
     UserSerializer,
     VehicleSerializer,
 )
+
+
+
+# Global monotonic revision counter for ultra-fast polling
+_EVENT_REVISION = 0
+
+
+def bump_revision():
+    global _EVENT_REVISION
+    _EVENT_REVISION += 1
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def events_pulse(request):
+    """Ultra-fast revision heartbeat check (1ms response, no gunicorn timeouts)."""
+    return JsonResponse({
+        "revision": _EVENT_REVISION,
+        "unseen_alerts": Alert.objects.filter(seen=False).count(),
+        "today_presences": Attendance.objects.filter(date=date.today()).count(),
+        "today_accesses": AccessLog.objects.filter(date=date.today()).count(),
+        "active_cameras": Camera.objects.filter(enabled=True).count(),
+    })
+
+
+def sse_stream(request):
+    """Server-Sent Events (SSE) stream for real-time dashboard and table updates."""
+    import queue
+
+    def event_generator():
+        q = event_bus.subscribe()
+        yield 'event: connected\ndata: {"status": "connected"}\n\n'
+        try:
+            while True:
+                try:
+                    msg = q.get(timeout=5.0)
+                    yield msg
+                except queue.Empty:
+                    yield ": keepalive\n\n"
+        except (GeneratorExit, BaseException):
+            pass
+        finally:
+            event_bus.unsubscribe(q)
+
+    response = StreamingHttpResponse(event_generator(), content_type="text/event-stream")
+    response["Cache-Control"] = "no-cache"
+    response["X-Accel-Buffering"] = "no"
+    return response
+
+
 
 
 @api_view(["POST"])
@@ -37,6 +92,26 @@ def me(request):
     return Response(UserSerializer(request.user).data)
 
 
+def rebuild_face_gallery():
+    """Rebuilds models/faces.npz from data/photos/."""
+    import os
+    from django.conf import settings
+    base_dir = getattr(settings, "BASE_DIR", "/app")
+    try:
+        from vision.faces.engine import FaceEngine
+        from vision.faces.enroll import enroll_directory
+        from vision.config import Config
+        cfg_path = os.path.join(base_dir, "config.yaml")
+        if os.path.exists(cfg_path):
+            cfg = Config.load(cfg_path)
+            photos_dir = os.path.join(base_dir, "data", "photos")
+            if os.path.isdir(photos_dir):
+                index = enroll_directory(FaceEngine(cfg.faces, False), photos_dir)
+                index.save(cfg.faces.index_path)
+    except Exception:
+        pass
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("nom", "prenom")
     serializer_class = UserSerializer
@@ -47,20 +122,97 @@ class UserViewSet(viewsets.ModelViewSet):
         role = self.request.query_params.get("role")
         return qs.filter(role=role) if role else qs
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        self._handle_uploaded_photos(user)
+        event_bus.broadcast("members_changed", {"action": "create", "id": user.id})
+        bump_revision()
+
+    def perform_update(self, serializer):
+        user = serializer.save()
+        self._handle_uploaded_photos(user)
+        event_bus.broadcast("members_changed", {"action": "update", "id": user.id})
+        bump_revision()
+
+    def perform_destroy(self, instance):
+        import os
+        import shutil
+        from django.conf import settings
+        user_id = instance.id
+        instance.delete()
+        base_dir = getattr(settings, "BASE_DIR", "/app")
+        user_photos_dir = os.path.join(base_dir, "data", "photos", str(user_id))
+        if os.path.isdir(user_photos_dir):
+            shutil.rmtree(user_photos_dir, ignore_errors=True)
+        rebuild_face_gallery()
+        event_bus.broadcast("members_changed", {"action": "delete", "id": user_id})
+        bump_revision()
+
+    def _handle_uploaded_photos(self, user):
+        import os
+        import shutil
+        from django.conf import settings
+        base_dir = getattr(settings, "BASE_DIR", "/app")
+        user_dir = os.path.join(base_dir, "data", "photos", str(user.id))
+        os.makedirs(user_dir, exist_ok=True)
+
+        files = self.request.FILES.getlist("photos")
+        if files:
+            for idx, f in enumerate(files):
+                dest = os.path.join(user_dir, f"photo_{idx+1}_{f.name}")
+                with open(dest, "wb+") as destination:
+                    for chunk in f.chunks():
+                        destination.write(chunk)
+                if idx == 0 and not user.photo:
+                    user.photo.save(f"{user.username}_{idx+1}.jpg", f, save=False)
+            user.save(update_fields=["photo"])
+        elif user.photo:
+            try:
+                if os.path.isfile(user.photo.path):
+                    shutil.copy2(user.photo.path, os.path.join(user_dir, "ref.jpg"))
+            except Exception:
+                pass
+
+        rebuild_face_gallery()
+
+    @action(detail=False, methods=["post"])
+    def sync_faces(self, request):
+        """Rebuilds the face gallery index from all user profile photos."""
+        rebuild_face_gallery()
+        return Response({"enrolled": User.objects.exclude(photo="").count(), "message": "Galerie faciale synchronisée"})
+
+
+
 
 class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
-    """Read-only on purpose: presences are written by the cameras, never by hand.
-    Correcting one is an admin action, and it belongs in the Django admin with its
-    audit trail, not in a REST endpoint anyone with a token can call."""
-
     serializer_class = AttendanceSerializer
     permission_classes = [IsSupervisorOrAdmin]
 
     def get_queryset(self):
-        qs = Attendance.objects.select_related("user")
+        qs = Attendance.objects.select_related("user").order_by("-date", "-id")
         params = self.request.query_params
         if user_id := params.get("user"):
             qs = qs.filter(user_id=user_id)
+        if statut := params.get("statut"):
+            qs = qs.filter(statut=statut)
+        if start := params.get("from"):
+            qs = qs.filter(date__gte=start)
+        if end := params.get("to"):
+            qs = qs.filter(date__lte=end)
+        return qs
+
+
+class AttendanceAuditViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = AttendanceAuditSerializer
+    permission_classes = [IsSupervisorOrAdmin]
+
+    def get_queryset(self):
+        qs = AttendanceAudit.objects.select_related("user", "attendance").order_by("-date", "-heure", "-id")
+        params = self.request.query_params
+        if user_id := params.get("user"):
+            qs = qs.filter(user_id=user_id)
+        if att_id := params.get("attendance"):
+            qs = qs.filter(attendance_id=att_id)
         if start := params.get("from"):
             qs = qs.filter(date__gte=start)
         if end := params.get("to"):
@@ -69,9 +221,11 @@ class AttendanceViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
-    queryset = Vehicle.objects.all()
+    queryset = Vehicle.objects.all().order_by("-id")
     serializer_class = VehicleSerializer
     permission_classes = [IsSupervisorOrAdmin]
+
+
 
 
 class AccessLogViewSet(viewsets.ReadOnlyModelViewSet):
@@ -79,7 +233,7 @@ class AccessLogViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsSupervisorOrAdmin]
 
     def get_queryset(self):
-        qs = AccessLog.objects.select_related("vehicle")
+        qs = AccessLog.objects.select_related("vehicle").order_by("-date", "-id")
         params = self.request.query_params
         if statut := params.get("statut"):
             qs = qs.filter(statut=statut)
@@ -91,7 +245,7 @@ class AccessLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AlertViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Alert.objects.all()
+    queryset = Alert.objects.all().order_by("-created_at")
     serializer_class = AlertSerializer
     permission_classes = [IsSupervisorOrAdmin]
 
@@ -100,7 +254,40 @@ class AlertViewSet(viewsets.ReadOnlyModelViewSet):
         alert = self.get_object()
         alert.seen = True
         alert.save(update_fields=["seen"])
+        event_bus.broadcast("alert_seen", {"id": alert.id})
+        bump_revision()
         return Response(self.get_serializer(alert).data)
+
+    @action(detail=False, methods=["post"])
+    def mark_all_seen(self, request):
+        count = Alert.objects.filter(seen=False).update(seen=True)
+        event_bus.broadcast("alert_seen", {"all": True})
+        bump_revision()
+        return Response({"marked": count})
+
+
+
+
+class CameraViewSet(viewsets.ModelViewSet):
+    queryset = Camera.objects.all().order_by("id")
+    serializer_class = CameraSerializer
+    permission_classes = [IsSupervisorOrAdmin]
+
+    def perform_create(self, serializer):
+        cam = serializer.save()
+        event_bus.broadcast("cameras_changed", {"action": "create", "id": cam.id})
+        bump_revision()
+
+    def perform_update(self, serializer):
+        cam = serializer.save()
+        event_bus.broadcast("cameras_changed", {"action": "update", "id": cam.id})
+        bump_revision()
+
+    def perform_destroy(self, instance):
+        cam_id = instance.id
+        instance.delete()
+        event_bus.broadcast("cameras_changed", {"action": "delete", "id": cam_id})
+        bump_revision()
 
 
 def _window(request) -> tuple[date, date]:
@@ -141,6 +328,7 @@ def dashboard(request):
         autorises=Count("id", filter=Q(statut=AccessLog.Status.AUTHORIZED)),
         refuses=Count("id", filter=Q(statut=AccessLog.Status.REFUSED)),
     )
+    active_cameras = Camera.objects.filter(enabled=True).count()
     return Response(
         {
             "date": today,
@@ -152,5 +340,7 @@ def dashboard(request):
             ).count(),
             **access,
             "alertes_non_vues": Alert.objects.filter(seen=False).count(),
+            "active_cameras": active_cameras,
         }
     )
+

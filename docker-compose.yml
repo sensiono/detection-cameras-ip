@@ -1,0 +1,105 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: vision_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: vision
+      MYSQL_DATABASE: vision
+      MYSQL_USER: vision
+      MYSQL_PASSWORD: vision
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pvision"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: vision_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: vision
+    ports:
+      - "8080:80"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vision_backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DJANGO_SECRET_KEY: dev-super-secret-key-change-in-prod
+      DJANGO_DEBUG: "1"
+      DB_NAME: vision
+      DB_USER: vision
+      DB_PASSWORD: vision
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      CORS_ORIGINS: "http://localhost,http://localhost:80,http://localhost:4200"
+      LATE_AFTER: "08:30"
+    volumes:
+      - ./backend:/app
+      - backend_media:/app/media
+    ports:
+      - "8000:8000"
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vision_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+      - "80:80"
+
+  vision-attendance:
+    build:
+      context: .
+      dockerfile: vision/Dockerfile
+    container_name: vision_cam_attendance
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - CAMERA_ID=cam-entrance
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config.yaml:/app/config.yaml
+
+  vision-gate:
+    build:
+      context: .
+      dockerfile: vision/Dockerfile
+    container_name: vision_cam_gate
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - CAMERA_ID=cam-gate
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config.yaml:/app/config.yaml
+
+volumes:
+  mysql_data:
+  backend_media:

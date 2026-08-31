@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 from insightface.app import FaceAnalysis
 
+
+
 from ..config import FacesCfg
 from ..device import use_gpu
 from ..schemas import FaceDetection

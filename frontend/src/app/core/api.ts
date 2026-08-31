@@ -2,7 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { AccessLog, Alert, Attendance, Page, Stats, User, Vehicle } from './models';
+import { AccessLog, Alert, Attendance, AttendanceAudit, Camera, Page, Stats, User, Vehicle } from './models';
+
+
 
 /** Thin typed wrapper over the REST API. No caching, no store: the dashboard is
  *  read-mostly and the numbers must be current, not consistent with a cache. */
@@ -22,8 +24,12 @@ export class Api {
     return this.http.get<Stats>('/api/dashboard/');
   }
 
-  attendance(filters: Record<string, string | undefined> = {}): Observable<Page<Attendance>> {
-    return this.http.get<Page<Attendance>>('/api/attendance/', { params: this.params(filters) });
+  attendance(filters?: Record<string, string | undefined>): Observable<Page<Attendance>> {
+    return this.http.get<Page<Attendance>>('/api/attendance/', { params: this.params(filters || {}) });
+  }
+
+  attendanceAudits(filters?: Record<string, string | undefined>): Observable<Page<AttendanceAudit>> {
+    return this.http.get<Page<AttendanceAudit>>('/api/attendance-audits/', { params: this.params(filters || {}) });
   }
 
   logs(filters: Record<string, string | undefined> = {}): Observable<Page<AccessLog>> {
@@ -44,17 +50,56 @@ export class Api {
     return this.http.delete<void>(`/api/vehicles/${id}/`);
   }
 
+  cameras(): Observable<Page<Camera>> {
+    return this.http.get<Page<Camera>>('/api/cameras/');
+  }
+
+  saveCamera(camera: Camera): Observable<Camera> {
+    return camera.id
+      ? this.http.put<Camera>(`/api/cameras/${camera.id}/`, camera)
+      : this.http.post<Camera>('/api/cameras/', camera);
+  }
+
+  deleteCamera(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/cameras/${id}/`);
+  }
+
   members(): Observable<Page<User>> {
+
     return this.http.get<Page<User>>('/api/users/', { params: this.params({ role: 'member' }) });
   }
 
+  users(filters?: Record<string, string | undefined>): Observable<Page<User>> {
+    return this.http.get<Page<User>>('/api/users/', { params: this.params(filters || {}) });
+  }
+
+  saveUser(formData: FormData, id?: number): Observable<User> {
+    return id
+      ? this.http.patch<User>(`/api/users/${id}/`, formData)
+      : this.http.post<User>('/api/users/', formData);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/users/${id}/`);
+  }
+
+  syncFaces(): Observable<{ enrolled: number; message: string }> {
+    return this.http.post<{ enrolled: number; message: string }>('/api/users/sync_faces/', {});
+  }
+
   alerts(): Observable<Page<Alert>> {
+
     return this.http.get<Page<Alert>>('/api/alerts/');
   }
 
   markSeen(id: number): Observable<Alert> {
     return this.http.post<Alert>(`/api/alerts/${id}/seen/`, {});
   }
+
+  markAllSeen(): Observable<{ marked: number }> {
+    return this.http.post<{ marked: number }>('/api/alerts/mark_all_seen/', {});
+  }
+
 
   /** Reports need the auth header, so they cannot be a plain <a href>. */
   downloadReport(fmt: 'xlsx' | 'pdf', filters: Record<string, string | undefined>): void {

@@ -7,16 +7,23 @@ from . import views
 router = DefaultRouter()
 router.register("users", views.UserViewSet)
 router.register("attendance", views.AttendanceViewSet, basename="attendance")
+router.register("attendance-audits", views.AttendanceAuditViewSet, basename="attendance-audits")
 router.register("vehicles", views.VehicleViewSet)
+router.register("cameras", views.CameraViewSet)
 router.register("logs", views.AccessLogViewSet, basename="logs")
+
 router.register("alerts", views.AlertViewSet)
 
 urlpatterns = [
+    path("events/pulse/", views.events_pulse, name="events-pulse"),
+    path("events/stream/", views.sse_stream, name="sse-stream"),
     path("events/", views.events, name="events"),
+
     path("auth/login/", TokenObtainPairView.as_view(), name="login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("auth/me/", views.me, name="me"),
     path("dashboard/", views.dashboard, name="dashboard"),
+
     path("reports/attendance.<str:fmt>", views.attendance_report, name="attendance-report"),
     path("", include(router.urls)),
 ]

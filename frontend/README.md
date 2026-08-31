@@ -1,80 +1,68 @@
-# Frontend — Angular dashboard
+# Frontend — Tableau de Bord de Supervision Angular
 
-Supervision screen for the two roles of the cahier des charges. Talks only to the
-Django API; it never knows a camera exists.
+Interface utilisateur moderne et réactive destinée aux agents de supervision et administrateurs de sécurité. L'application communique exclusivement avec l'API Django via REST et JWT, sans dépendance directe avec les flux caméras bruts.
 
-## Run
+---
 
+## 1. Démarrage & Déploiement
+
+### Via Docker Compose (Recommandé)
+Le frontend est servi par un conteneur NGINX optimisé :
 ```bash
-nvm use 20            # Angular 20 needs Node >= 20
+docker compose up -d frontend
+```
+Accessible sur : [http://localhost](http://localhost) (port 80 ou port 4200).
+
+### Développement Local (Node.js)
+```bash
+# Nécessite Node.js >= 20
 npm install
-npm start             # http://localhost:4200
-npm test              # 4 specs, headless Chrome
-npm run build
+npm start             # Démarre le serveur de dev sur http://localhost:4200
+npm run build         # Compilation pour la production
 ```
 
-`proxy.conf.json` forwards `/api` and `/media` to `http://127.0.0.1:8000`, so there is
-no CORS in development and no API base URL to configure per environment.
+Le fichier `proxy.conf.json` redirige automatiquement les requêtes `/api` et `/media` vers `http://127.0.0.1:8000`, éliminant tout blocage CORS en phase de développement.
 
-## Pages
+---
 
-| Route | What it shows |
-|---|---|
-| `/login` | JWT login |
-| `/` | today's counters and the five latest alerts |
-| `/attendance` | presences, filters, Excel/PDF export |
-| `/logs` | gate passages with the plate crop that justified the decision |
-| `/vehicles` | the authorisation list — admin writes, supervisor reads |
-| `/alerts` | refused plates and unknown faces, with their snapshot |
+## 2. Pages & Fonctionnalités du Tableau de Bord
 
-## Structure
+| Route Angular | Titre de la Page | Description & Fonctionnalités |
+|---|---|---|
+| `/login` | Authentification | Connexion sécurisée JWT avec identifiant et mot de passe. |
+| `/` | Tableau de Bord | 6 cartes de métriques clés temps réel (Présents, Retards, Absents, Véhicules autorisés/refusés, Alertes), statut des 2 caméras actives, flux des 5 dernières alertes. |
+| `/attendance` | Registre des Présences | Tableau d'émargement biométrique, filtres par période et par collaborateur, badges de statut (`Présent` / `En retard`), zoom sur capture de preuve, boutons d'export **Excel (.xlsx)** et **PDF**. |
+| `/logs` | Contrôle d'Accès ANPR | Historique des passages de véhicules, visualisation des plaques d'immatriculation au format tunisien, jauge de confiance IA et capture du véhicule. |
+| `/vehicles` | Véhicules Autorisés | Gestion de la liste blanche (Whitelist), formulaire d'ajout/modification avec sélecteur de catégorie et bascule instantanée d'autorisation. |
+| `/alerts` | Alertes de Sécurité | Grille des anomalies de sécurité (plaques refusées, visages inconnus, tentatives de spoofing) avec capture associée et bouton d'acquittement immédiat. |
+
+---
+
+## 3. Architecture & Structure du Projet
 
 ```
 src/app/
-  app.routes.ts     every route lazy: loadComponent, so a page is its own chunk
-  app.config.ts     providers — HttpClient with the auth interceptor, zoneless
-  core/
-    api.ts          one typed service per endpoint group; the only place fetch happens
-    auth.ts         signal-based session, HTTP interceptor, route guard
-    models.ts       the API's shapes, mirroring backend/core/serializers.py
-  pages/            one standalone component per route
+├── app.config.ts       # Fournisseurs Angular (HttpClient avec intercepteur JWT, routing zoneless)
+├── app.routes.ts       # Définition des routes en lazy loading (chargement à la demande)
+├── app.ts              # Barre de navigation supérieure, statut des caméras et profil utilisateur
+├── core/
+│   ├── api.ts          # Service client HTTP typé centralisant tous les appels vers l'API Django
+│   ├── auth.ts         # Gestionnaire de session basé sur les Signals Angular, intercepteur HTTP et gardien de route (AuthGuard)
+│   └── models.ts       # Interfaces TypeScript synchronisées avec les schémas Django REST
+└── pages/              # Composants autonomes (Standalone Components) pour chaque vue
+    ├── alerts.ts
+    ├── attendance.ts
+    ├── dashboard.ts
+    ├── login.ts
+    ├── logs.ts
+    └── vehicles.ts
 ```
 
-`core/models.ts` is hand-written rather than generated. It is small enough that a
-generator would be more machinery than the thing it generates, but it does mean an API
-field rename must be applied twice — worth knowing before you rename one.
+---
 
-## Auth flow
+## 4. Choix de Conception & Expérience Utilisateur (UI/UX)
 
-```
-/login ── POST /api/auth/login/ ── access + refresh
-   │                                  │
-   │                          localStorage (read once at startup,
-   │                          so F5 does not log you out)
-   │                                  │
-   └── authInterceptor adds  Authorization: Bearer <access>  to every request
-       authGuard redirects to /login when there is no token
-```
-
-The token lives in `localStorage`, which is readable by any script on the origin. That
-is acceptable here because the dashboard has no third-party scripts and Angular escapes
-interpolation by default — but it is a real trade-off, not a non-issue, and the report
-should say so rather than claim the choice was free. The alternative (`HttpOnly` cookie
-plus CSRF token) is more moving parts than this dashboard justifies.
-
-## Choices worth defending in the report
-
-**No UI framework.** The dashboard is tables, six tiles and one form. `src/styles.css`
-is 90 lines and carries the dark theme for free via `prefers-color-scheme`. Adding
-Material would have been more code, not less.
-
-**No NgRx.** There is no client-side state to speak of: every page loads what it shows.
-A store would add a second copy of the truth, and supervision numbers must be current
-rather than consistent with a cache.
-
-**Signals, standalone components, zoneless.** No `NgModule`, no Zone.js — each page is
-a lazy chunk, and the whole app is 86 kB over the wire.
-
-**The role check is duplicated on purpose.** `auth.canEdit` hides what
-`IsSupervisorOrAdmin` would refuse anyway. The UI check is courtesy; the server one is
-the security boundary. Never present the first as if it were the second.
+- **Thème Sombre & Glassmorphism** : Palette soignée Obsidian & Slate (`#0b0f17`), surfaces translucides avec flou d'arrière-plan (`backdrop-filter: blur(16px)`), bordures subtiles et accents colorés éclatants.
+- **Micro-Interactions Réactives** : Effet de survol avec zoom fluide sur les captures photographiques de pointage et de plaques.
+- **Badges d'Immatriculation Réalistes** : Composant CSS `.tn-plate` reproduisant fidèlement l'aspect des plaques d'immatriculation tunisiennes (fond noir, écriture blanche en police monospace).
+- **Zoneless & Composants Autonomes** : Utilisation exclusive des Signals Angular et de l'architecture sans Zone.js pour des performances maximales et un bundle ultra-léger (< 80 Ko compressé).

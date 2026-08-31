@@ -9,6 +9,21 @@ export interface User {
   role: Role;
 }
 
+export interface AttendanceAudit {
+  id: number;
+  attendance: number | null;
+  user: number;
+  user_name: string;
+  date: string;
+  heure: string;
+  timestamp: string;
+  event_type: 'check_in' | 'departure_update' | 'passage';
+  camera_id: string;
+  confidence: number;
+  snapshot: string | null;
+  audit_hash?: string;
+}
+
 export interface Attendance {
   id: number;
   user: number;
@@ -20,7 +35,10 @@ export interface Attendance {
   camera_id: string;
   confidence: number;
   snapshot: string | null;
+  audit_hash?: string;
+  audits?: AttendanceAudit[];
 }
+
 
 export interface Vehicle {
   id?: number;
@@ -41,17 +59,20 @@ export interface AccessLog {
   camera_id: string;
   confidence: number;
   snapshot: string | null;
+  audit_hash?: string;
 }
 
-export type AlertKind = 'refused_plate' | 'unknown_face' | 'spoof_attempt';
+export type AlertKind = 'refused_plate' | 'unknown_face' | 'spoof_attempt' | 'signal_loss' | 'tamper_attempt';
 
-/** Single source of truth for alert wording — three kinds is one too many for a
- *  ternary repeated in every template. */
+/** Single source of truth for alert wording */
 export const ALERT_LABELS: Record<AlertKind, string> = {
   refused_plate: 'Plaque refusée',
   unknown_face: 'Visage inconnu',
   spoof_attempt: "Tentative d'usurpation",
+  signal_loss: 'Perte de signal vidéo',
+  tamper_attempt: 'Obstruction / Sabotage',
 };
+
 
 export interface Alert {
   id: number;
@@ -63,6 +84,19 @@ export interface Alert {
   seen: boolean;
 }
 
+export interface Camera {
+  id?: number;
+  cam_id: string;
+  name: string;
+  url: string;
+  task: 'attendance' | 'anpr';
+  enabled: boolean;
+  location?: string;
+  resolution?: string;
+  fps?: number;
+  created_at?: string;
+}
+
 export interface Stats {
   date: string;
   membres: number;
@@ -72,6 +106,7 @@ export interface Stats {
   autorises: number;
   refuses: number;
   alertes_non_vues: number;
+  active_cameras?: number;
 }
 
 /** Django REST pagination. */
@@ -81,3 +116,4 @@ export interface Page<T> {
   previous: string | null;
   results: T[];
 }
+

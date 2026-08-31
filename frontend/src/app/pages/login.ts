@@ -3,59 +3,244 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Auth } from '../core/auth';
+import { I18nService, Lang } from '../core/i18n';
 
 @Component({
   selector: 'app-login',
   imports: [FormsModule],
   template: `
-    <div class="login">
-      <form (ngSubmit)="submit()" class="card">
-        <h1>Supervision</h1>
-        <p class="muted">Système de détection par caméras IP</p>
+    <div class="login-wrapper">
+      <div class="login-backdrop"></div>
 
-        <label for="u">Identifiant</label>
-        <input id="u" name="username" [(ngModel)]="username" autocomplete="username" required />
+      <!-- Language selector at top right of login screen -->
+      <div class="login-lang-bar">
+        <div class="lang-selector">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <select [ngModel]="i18n.currentLang()" (ngModelChange)="i18n.setLang($event)">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+      </div>
+      
+      <form (ngSubmit)="submit()" class="glass-card login-card">
+        <div class="brand-header">
+          <div class="logo-circle">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+          <h1>VISION AI</h1>
+          <p class="subtitle">{{ i18n.t('login.subtitle') }}</p>
+        </div>
 
-        <label for="p">Mot de passe</label>
-        <input id="p" name="password" type="password" [(ngModel)]="password"
-               autocomplete="current-password" required />
+        <div class="input-field">
+          <label for="u">{{ i18n.t('login.username') }}</label>
+          <div class="input-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input id="u" name="username" [(ngModel)]="username" autocomplete="username" placeholder="admin" required />
+          </div>
+        </div>
 
-        @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+        <div class="input-field">
+          <label for="p">{{ i18n.t('login.password') }}</label>
+          <div class="input-container">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input id="p" name="password" type="password" [(ngModel)]="password"
+                   autocomplete="current-password" placeholder="••••••••" required />
+          </div>
+        </div>
 
-        <button type="submit" [disabled]="busy()">
-          {{ busy() ? 'Connexion…' : 'Se connecter' }}
+        @if (error()) {
+          <div class="error-banner" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none"/></svg>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <button type="submit" [disabled]="busy()" class="submit-btn">
+          @if (busy()) {
+            <span class="btn-loader"></span>
+            <span>...</span>
+          } @else {
+            <span>{{ i18n.t('login.submit') }}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          }
         </button>
+
+        <div class="login-footer">
+          <span class="muted text-xs">Moteur Vision Edge & Architecture Décentralisée · v2.0</span>
+        </div>
       </form>
     </div>
   `,
   styles: `
-    .login { display: grid; place-items: center; min-height: 100vh; }
-    .card { display: grid; gap: .5rem; width: min(22rem, 90vw); padding: 2rem;
-            background: var(--surface); border-radius: 12px; box-shadow: 0 8px 30px #0002; }
-    h1 { margin: 0; font-size: 1.4rem; }
-    .muted { margin: 0 0 1rem; color: var(--muted); font-size: .85rem; }
-    label { font-size: .8rem; color: var(--muted); }
-    button { margin-top: 1rem; }
+    .login-wrapper {
+      min-height: 80vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      padding: 1.5rem;
+    }
+    .login-lang-bar {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      z-index: 10;
+    }
+    [dir="rtl"] .login-lang-bar {
+      right: auto;
+      left: 1.5rem;
+    }
+    .login-backdrop {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
+      filter: blur(40px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      padding: 2.25rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: var(--shadow-lg);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .logo-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 20px var(--brand-glow);
+    }
+    .brand-header h1 {
+      font-size: 1.5rem;
+      margin: 0 0 0.25rem 0;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .input-field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--fg-secondary);
+    }
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-container svg {
+      position: absolute;
+      left: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    [dir="rtl"] .input-container svg {
+      left: auto;
+      right: 12px;
+    }
+    .input-container input {
+      width: 100%;
+      padding-left: 2.35rem;
+    }
+    [dir="rtl"] .input-container input {
+      padding-left: 0.75rem;
+      padding-right: 2.35rem;
+    }
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--bad-bg);
+      border: 1px solid var(--bad-border);
+      color: var(--bad);
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+    .submit-btn {
+      margin-top: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-loader {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .login-footer {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .text-xs { font-size: 0.75rem; }
   `,
 })
-export class Login {
+export class LoginPage {
   private auth = inject(Auth);
   private router = inject(Router);
+  i18n = inject(I18nService);
 
   username = '';
   password = '';
-  readonly busy = signal(false);
-  readonly error = signal('');
+  busy = signal(false);
+  error = signal<string | null>(null);
 
   submit(): void {
+    if (!this.username || !this.password) return;
     this.busy.set(true);
-    this.error.set('');
+    this.error.set(null);
     this.auth.login(this.username, this.password).subscribe({
-      next: () => this.auth.loadUser().subscribe(() => this.router.navigate(['/'])),
-      error: () => {
-        this.error.set('Identifiants invalides.');
+      next: () => this.router.navigateByUrl('/'),
+      error: (err) => {
         this.busy.set(false);
+        const serverMsg = err.error?.error?.message;
+        this.error.set(serverMsg || this.i18n.t('login.error'));
       },
     });
   }
 }
+
+export const Login = LoginPage;
+

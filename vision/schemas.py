@@ -28,7 +28,10 @@ class PlateDetection:
 class Event:
     """The only thing this service sends to the backend."""
 
-    kind: Literal["attendance", "access", "unknown_face", "spoof_attempt"]
+    kind: Literal[
+        "attendance", "access", "unknown_face", "spoof_attempt", "signal_loss", "tamper_attempt"
+    ]
+
     camera_id: str
     subject: str  # user id (attendance), plate string (access), empty if unknown
     confidence: float

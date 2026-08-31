@@ -26,5 +26,10 @@ vision = "vision.cli:app"
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vision*"]
+
 [tool.ruff]
 line-length = 100
+

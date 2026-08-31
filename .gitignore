@@ -18,7 +18,11 @@ backend/media/
 models/*.pt
 models/*.npz
 
-# Jeux d'images. Photos de personnes réelles : ni redistribuables, ni nécessaires
-# (training/fetch_lfw.py régénère faces_lfw, training/labels/*.csv gardent le travail).
 data/
 .DS_Store
+*.pdf
+*.pdf.tmp
+*.egg-info/
+.idea/
+backend/.idea/
+

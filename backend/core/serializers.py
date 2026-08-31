@@ -7,8 +7,10 @@ import uuid
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from .models import AccessLog, Alert, Attendance, User, Vehicle
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, User, Vehicle
+
 from .plates import canonical
+
 
 
 class EventSerializer(serializers.Serializer):
@@ -16,13 +18,15 @@ class EventSerializer(serializers.Serializer):
     event can touch several tables, and the mapping is a decision, not a field copy."""
 
     kind = serializers.ChoiceField(
-        choices=["attendance", "access", "unknown_face", "spoof_attempt"]
+        choices=["attendance", "access", "unknown_face", "spoof_attempt", "signal_loss", "tamper_attempt"]
     )
+
     camera_id = serializers.CharField(max_length=64)
     subject = serializers.CharField(max_length=64, allow_blank=True)
     confidence = serializers.FloatField(min_value=0.0, max_value=1.0)
     at = serializers.DateTimeField()
-    snapshot = serializers.CharField(required=False, allow_blank=True)  # base64 JPEG
+    snapshot = serializers.CharField(required=False, allow_blank=True, allow_null=True)  # base64 JPEG
+
 
     def validate(self, attrs):
         if attrs["kind"] in ("attendance", "access") and not attrs["subject"]:
@@ -47,16 +51,30 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "nom", "prenom", "photo", "role")
 
 
+class AttendanceAuditSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source="user.__str__", read_only=True)
+
+    class Meta:
+        model = AttendanceAudit
+        fields = (
+            "id", "attendance", "user", "user_name", "date", "heure",
+            "timestamp", "event_type", "camera_id", "confidence", "snapshot", "audit_hash",
+        )
+        read_only_fields = fields
+
+
 class AttendanceSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.__str__", read_only=True)
+    audits = AttendanceAuditSerializer(many=True, read_only=True)
 
     class Meta:
         model = Attendance
         fields = (
             "id", "user", "user_name", "date", "check_in", "check_out",
-            "statut", "camera_id", "confidence", "snapshot",
+            "statut", "camera_id", "confidence", "snapshot", "audit_hash", "audits",
         )
         read_only_fields = fields
+
 
 
 class VehicleSerializer(serializers.ModelSerializer):
@@ -82,9 +100,10 @@ class AccessLogSerializer(serializers.ModelSerializer):
         model = AccessLog
         fields = (
             "id", "vehicle", "plaque", "date", "heure",
-            "statut", "camera_id", "confidence", "snapshot",
+            "statut", "camera_id", "confidence", "snapshot", "audit_hash",
         )
         read_only_fields = fields
+
 
 
 class AlertSerializer(serializers.ModelSerializer):
@@ -92,3 +111,14 @@ class AlertSerializer(serializers.ModelSerializer):
         model = Alert
         fields = ("id", "kind", "message", "camera_id", "snapshot", "created_at", "seen")
         read_only_fields = ("id", "kind", "message", "camera_id", "snapshot", "created_at")
+
+
+class CameraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Camera
+        fields = (
+            "id", "cam_id", "name", "url", "task",
+            "enabled", "location", "resolution", "fps", "created_at"
+        )
+        read_only_fields = ("id", "created_at")
+

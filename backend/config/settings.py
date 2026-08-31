@@ -94,7 +94,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
+    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
 }
+
 
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(hours=8)}
 
@@ -109,5 +111,14 @@ EMAIL_BACKEND = os.environ.get(
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "vision@localhost")
 ALERT_EMAIL = os.environ.get("ALERT_EMAIL", "")
 
+# Real-time outbound alert dispatchers (Telegram Bot & Webhook)
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+ALERT_WEBHOOK_URL = os.environ.get("ALERT_WEBHOOK_URL", "")
+
+# Biometric & snapshot retention policy (Tunisian INPDP Law 2004-63 / GDPR)
+SNAPSHOT_RETENTION_DAYS = int(os.environ.get("SNAPSHOT_RETENTION_DAYS", "30"))
+
 # A member seen after this time is marked late rather than present.
 LATE_AFTER = os.environ.get("LATE_AFTER", "08:30")
+

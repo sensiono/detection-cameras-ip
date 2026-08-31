@@ -1,141 +1,124 @@
-# Backend — Django REST + MySQL
+# Backend — Django REST Framework & MySQL
 
-Owns the database and every decision that depends on it. The AI service recognises;
-this decides whether a plate may enter, whether a presence is late, and who is absent.
+Le service backend centralise la base de données, la logique décisionnelle métier, l'authentification et les interfaces d'administration. Le service de vision IA se limite à rapporter ce qu'il observe ; c'est le backend qui décide si un véhicule est autorisé, si une présence est en retard, et qui lève les alertes.
 
-## Setup
+---
 
+## 1. Installation & Démarrage
+
+### Via Docker Compose (Recommandé)
+Le backend est automatiquement lancé avec sa base MySQL 8.4 via le `docker-compose.yml` à la racine :
 ```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
-cp .env.example .env        # then export the variables, or use direnv
-
-# MySQL, if you do not have one running
-docker run -d --name vision-mysql -e MYSQL_ROOT_PASSWORD=vision \
-  -e MYSQL_DATABASE=vision -p 3306:3306 mysql:8
-
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-python manage.py test
+docker compose up -d backend
 ```
 
-## The one token the cameras need
+### Installation Locale (Développement)
+```bash
+# 1. Création de l'environnement virtuel
+python -m venv .venv
+source .venv/bin/activate  # Sur Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Configuration des variables d'environnement
+cp .env.example .env
+
+# 3. Lancement des migrations et création du compte administrateur
+python manage.py migrate
+python manage.py createsuperuser
+
+# 4. Lancement du serveur de développement
+python manage.py runserver 0.0.0.0:8000
+```
+
+---
+
+## 2. Génération du Jeton Machine pour les Caméras IA
+
+Pour permettre au service IA de poster ses détections sur l'API sans passer par un compte utilisateur humain :
 
 ```bash
 python manage.py shell -c "
 from core.models import User
 from rest_framework.authtoken.models import Token
-u,_ = User.objects.get_or_create(username='ai-service')
-print(Token.objects.get_or_create(user=u)[0].key)"
+u, _ = User.objects.get_or_create(username='ai-service')
+print('Jeton Caméra :', Token.objects.get_or_create(user=u)[0].key)
+"
 ```
 
-Put it in `../config.yaml` under `sink.token`. Dashboard users log in with JWT instead:
-two mechanisms because they are two different things — one machine account that may only
-post events, and humans with roles.
+Ce jeton doit être reporté dans `config.yaml` à la section `sink.token`.
 
-## API
+---
 
-| Method | Path | Who | What |
+## 3. Points d'Accès API REST
+
+| Méthode | Point d'Accès (Route) | Authentification Requise | Description & Usage |
 |---|---|---|---|
-| POST | `/api/events/` | AI service (Token) | the only write path from the cameras |
-| POST | `/api/auth/login/` | anyone | JWT access + refresh |
-| GET | `/api/dashboard/` | supervisor+ | today's counters, one round trip |
-| GET | `/api/attendance/` | supervisor+ | `?user=&from=&to=` |
-| GET | `/api/logs/` | supervisor+ | `?statut=refuse&from=&to=` |
-| GET/POST/PUT/DELETE | `/api/vehicles/` | admin writes, supervisor reads | the authorisation list |
-| GET | `/api/users/` | admin writes, supervisor reads | `?role=member` |
-| GET | `/api/alerts/`, POST `…/{id}/seen/` | supervisor+ | refusals and unknown faces |
-| GET | `/api/reports/attendance.xlsx\|.pdf` | supervisor+ | `?from=&to=&absent=1` |
+| **POST** | `/api/events/` | Token Machine (`ai-service`) | Ingestion unique des flux d'événements caméras |
+| **POST** | `/api/auth/login/` | Publique | Authentification JWT (jetons d'accès et de rafraîchissement) |
+| **GET** | `/api/dashboard/` | Superviseur / Admin | Métriques et compteurs de la journée en un seul appel |
+| **GET** | `/api/attendance/` | Superviseur / Admin | Registre des présences avec filtres (`?user=&from=&to=`) |
+| **GET** | `/api/logs/` | Superviseur / Admin | Historique des passages de véhicules (`?statut=&from=&to=`) |
+| **CRUD** | `/api/vehicles/` | Admin (Écriture) / Superviseur (Lecture) | Gestion de la liste blanche des véhicules (`autorise`) |
+| **GET** | `/api/users/` | Admin / Superviseur | Liste des collaborateurs et membres du personnel |
+| **GET / POST** | `/api/alerts/`, `.../{id}/seen/` | Superviseur / Admin | Consultation et acquittement des alertes de sécurité |
+| **GET** | `/api/reports/attendance.xlsx` | Superviseur / Admin | Export officiel des présences au format Excel |
+| **GET** | `/api/reports/attendance.pdf` | Superviseur / Admin | Export officiel des présences au format PDF |
 
-### Event payload
+---
 
-```json
-{"kind": "attendance", "camera_id": "cam-entrance", "subject": "42",
- "confidence": 0.71, "at": "2026-08-29T08:12:04+00:00", "snapshot": "<base64 jpeg>"}
-```
-
-* `attendance` — `subject` is a `User.id`. First sighting of the day writes `check_in`,
-  every later one moves `check_out`. Past `LATE_AFTER` the row is `late`.
-* `access` — `subject` is a normalised plate. Unknown or `autorise=False` gives a
-  refused `AccessLog` **and** an `Alert`.
-* `unknown_face` — a confident face matching nobody. `subject` is empty.
-
-`snapshot` is optional; without it the rows still write, they are just unverifiable.
-
-## Data model
-
-The four tables of § 9, plus `Alert` which the § 6 "alertes en temps réel" requirement
-needs and the cahier forgot to name.
+## 4. Modèle de Données Relationnel
 
 ```
-User ──┬─< Attendance      (one row per person per day)
-       ├─< Vehicle ──< AccessLog
-       └─ role: admin | supervisor | member
-
-Alert  (standalone: a refusal or an unknown face has no owner by definition)
-```
-
-| Table | Clé | Champs qui portent la logique |
-|---|---|---|
-| `User` | `id` | `role`, `nom`, `prenom`, `photo` |
-| `Attendance` | `(user, date)` unique | `check_in`, `check_out`, `statut`, `confidence`, `snapshot` |
-| `Vehicle` | `plaque` unique, normalisée | `autorise`, `user`, `type` |
-| `AccessLog` | — | `plaque`, `statut`, `confidence`, `snapshot` |
-| `Alert` | — | `kind`, `message`, `seen` |
-
-`User` is one table for everyone — the people the cameras recognise (`member`) and the
-people who log into the dashboard (`admin`, `supervisor`). The cahier describes them as
-one population; splitting them would mean two identity tables and a join on every event.
-
-**Plates are stored normalised.** `core/plates.py::canonical` strips separators and
-leading zeros, so `159 TN 0895`, `159-tn-895` and `159TN895` are one row. Canonicalisation
-happens in `to_internal_value`, *before* DRF's uniqueness check — doing it in
-`validate_plaque` lets a duplicate reach the database and return HTTP 500 instead of 400.
-
-Unlike the AI service, the backend deliberately does **not** undo OCR confusions
-(`O`→`0`, `I`→`1`). A human typing a plate into the dashboard means what they typed.
-
-## What happens to an event
-
-`core/ingest.py::handle_event` is the whole decision layer, and it is the only place
-where the database is allowed to change an outcome:
-
-```
-POST /api/events/  (Token auth, machine account only)
+User (admin | supervisor | member)
+  ▲
+  ├── Attendance (un enregistrement par personne et par jour)
+  │     - check_in, check_out, statut (present|late), confidence, snapshot
   │
-  ├─ kind=attendance ─ first sighting today → check_in, statut = present|late
-  │                    later sighting       → check_out moves
-  │
-  ├─ kind=access ──── Vehicle.autorise ? AccessLog(autorise)
-  │                                     : AccessLog(refuse) + Alert
-  │
-  ├─ kind=unknown_face ─ Alert
-  └─ kind=spoof_attempt ─ Alert   (photo held up to the camera)
+  └── Vehicle (plaque normalisée unique)
+        - autorise (booléen), type, proprietaire
+        ▲
+        └── AccessLog (historique de passage)
+              - plaque, statut (autorise|refuse), heure, confidence, snapshot
+
+Alert (enregistrements autonomes de sécurité)
+  - kind (refused_plate | unknown_face | spoof_attempt), message, camera_id, snapshot, seen
 ```
 
-The AI service never decides whether a plate may enter. It reports what it saw and
-the confidence; authorisation is a database question, so it is answered here. That
-separation is what lets you revoke a vehicle without touching the cameras.
+### Règles Métier Clés
+1. **Les absences sont calculées dynamiquement** : Une personne sans émargement pour une date ouvrée est considérée absente. Aucun enregistrement d'absence statique n'est créé en base afin d'éviter les désynchronisations.
+2. **Normalisation automatique des plaques** : Toutes les plaques sont stockées au format canonique (ex: `159TN8950`). Les espaces et tirets sont éliminés avant la vérification d'unicité.
+3. **Double authentification découplée** : Jeton DRF statique pour le service machine IA (autorisé uniquement en écriture sur `/api/events/`) et JWT pour les utilisateurs humains du tableau de bord.
 
-## Tests
+---
+
+## 5. Notifications en Temps Réel
+
+Le fichier `core/notify.py` gère le dispatching instantané des alertes lorsqu'une plaque non autorisée, un visage inconnu ou une usurpation est détectée :
+- **Telegram Bot** : Notification envoyée via l'API Telegram (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`).
+- **HTTP Webhook** : Envoi d'un payload JSON à tout système tiers externe (`ALERT_WEBHOOK_URL`).
+- **Courrier Électronique** : Notification SMTP classique (`ALERT_EMAIL`).
+
+---
+
+## 6. Purge Conforme INPDP (Loi 2004-63 & RGPD)
+
+Pour respecter les réglementations sur la protection des données biométriques et personnelles, une commande de gestion permet de purger automatiquement les clichés photographiques de contrôle après expiration de la période de rétention :
 
 ```bash
-python manage.py test          # 17 tests
+# Simulation sans suppression réelle
+python manage.py purge_snapshots --days 30 --dry-run
+
+# Exécution réelle de la purge
+python manage.py purge_snapshots --days 30
 ```
 
-They cover the parts that would fail silently: the check-in/check-out transition, the
-late boundary, refusal-plus-alert, plate normalisation collisions, role permissions on
-every endpoint, and that the machine token can post events but cannot read anything.
+Cette commande supprime physiquement les fichiers images du disque et met à null les champs `snapshot` des tables `Attendance` et `AccessLog`, tout en préservant l'intégrité des statistiques et heures d'émargement.
 
-## Design notes
+---
 
-**Absence is computed, never stored.** A member with no `Attendance` row for a day is
-absent. Storing it would mean a nightly job and a source of truth that drifts.
+## 7. Exécution des Tests Unitaires
 
-**Attendance and logs are read-only over REST.** They are written by cameras; a
-correction is an admin action and belongs in `/admin/` where it is audited.
-
-**Only embeddings live in the AI service, only identities live here.** Neither half
-holds enough to reconstruct a face on its own — that is the concrete answer to the
-"sécurité des données biométriques" requirement, and it is worth a paragraph in the
-report along with the INPDP declaration (loi 2004-63) that biometric processing needs.
+```bash
+python manage.py test
+```
+*17 tests unitaires couvrant l'ensemble des règles métier, transitions d'état et sécurités d'accès.*

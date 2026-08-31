@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from .models import AccessLog, Alert, Attendance, User, Vehicle
+from .ingest import handle_event
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, User, Vehicle
+
 
 
 class EventIngestionTests(APITestCase):
@@ -34,10 +36,15 @@ class EventIngestionTests(APITestCase):
         payload.update(overrides)
         return self.client.post(self.url, payload, format="json")
 
-    def test_first_sighting_checks_in_second_checks_out(self):
+    def test_first_sighting_checks_in_second_checks_out_and_audits_both(self):
         assert self.post().data["status"] == "checked_in"
         assert self.post().data["status"] == "checked_out"
         assert Attendance.objects.count() == 1  # one row a day, not one per frame
+        assert AttendanceAudit.objects.count() == 2
+        audits = list(AttendanceAudit.objects.order_by("timestamp"))
+        assert audits[0].event_type == AttendanceAudit.EventType.CHECK_IN
+        assert audits[1].event_type == AttendanceAudit.EventType.DEPARTURE_UPDATE
+
 
     def test_unknown_user_is_ignored_not_500(self):
         response = self.post(subject="99999")
@@ -159,3 +166,83 @@ class ReportTests(APITestCase):
         statuses = {r[1]: r[5] for r in rows}
         assert statuses["Present"] == "Présent"
         assert statuses["Absent"] == "Absent"
+
+
+class EnterpriseGDPRAndResilienceTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="sarah", password="x", nom="Sarah", role=User.Role.MEMBER)
+        self.admin = User.objects.create_user(username="admin", password="x", role=User.Role.ADMIN)
+        self.client.force_authenticate(self.admin)
+
+    def test_sha256_audit_hash_generated_on_creation(self):
+        att = Attendance.objects.create(
+            user=self.user, date=date.today(), check_in="08:15", statut="present", camera_id="cam-entrance"
+        )
+        assert len(att.audit_hash) == 64
+        
+        audit = AttendanceAudit.objects.create(
+            attendance=att, user=self.user, date=date.today(), heure="08:15",
+            event_type=AttendanceAudit.EventType.CHECK_IN, camera_id="cam-entrance", confidence=0.98
+        )
+        assert len(audit.audit_hash) == 64
+
+        log = AccessLog.objects.create(
+            plaque="159TN8950", date=date.today(), heure="08:15", statut="autorise", camera_id="cam-gate"
+        )
+        assert len(log.audit_hash) == 64
+
+    def test_signal_loss_and_tampering_alerts_ingestion(self):
+        now = timezone.now()
+        res_loss = handle_event({
+            "kind": "signal_loss",
+            "camera_id": "cam-entrance",
+            "subject": "Perte de signal vidéo (12s)",
+            "confidence": 1.0,
+            "at": now,
+        })
+        assert res_loss["status"] == "alert"
+        alert_loss = Alert.objects.get(id=res_loss["alert"])
+        assert alert_loss.kind == Alert.Kind.SIGNAL_LOSS
+        assert "Perte de signal" in alert_loss.message
+
+        res_tamper = handle_event({
+            "kind": "tamper_attempt",
+            "camera_id": "cam-gate",
+            "subject": "Sabotage: Lentille masquée",
+            "confidence": 1.0,
+            "at": now,
+        })
+        assert res_tamper["status"] == "alert"
+        alert_tamper = Alert.objects.get(id=res_tamper["alert"])
+        assert alert_tamper.kind == Alert.Kind.TAMPER_ATTEMPT
+
+    def test_gdpr_retention_purge_command(self):
+        from io import StringIO
+        from django.core.management import call_command
+        from django.core.files.base import ContentFile
+
+        old_date = date.today() - timedelta(days=45)
+        att_old = Attendance.objects.create(
+            user=self.user, date=old_date, check_in="08:00", statut="present", camera_id="cam-1"
+        )
+        att_old.snapshot.save("test_att.jpg", ContentFile(b"fake_image_bytes"))
+        
+        audit_old = AttendanceAudit.objects.create(
+            attendance=att_old, user=self.user, date=old_date, heure="08:00",
+            event_type=AttendanceAudit.EventType.CHECK_IN, camera_id="cam-1", confidence=0.95
+        )
+        audit_old.snapshot.save("test_audit.jpg", ContentFile(b"fake_image_bytes"))
+
+        out = StringIO()
+        call_command("purge_snapshots", days=30, stdout=out)
+        output = out.getvalue()
+        assert "Successfully purged" in output
+
+        att_old.refresh_from_db()
+        audit_old.refresh_from_db()
+        assert not bool(att_old.snapshot)
+        assert not bool(audit_old.snapshot)
+        assert len(att_old.audit_hash) == 64
+        assert len(audit_old.audit_hash) == 64
+        assert att_old.date == old_date
+

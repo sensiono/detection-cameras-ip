@@ -66,7 +66,37 @@ def run(camera_id: str, config: str = "config.yaml", dry_run: bool = False) -> N
     run_camera(camera, recognizer, sink, cfg)
 
 
+@app.command("run-all")
+def run_all(config: str = "config.yaml", dry_run: bool = False) -> None:
+    """Run all configured camera pipelines simultaneously in parallel threads."""
+    import threading
+    import time
+
+    cfg = Config.load(config)
+    typer.echo(f"Lancement de {len(cfg.cameras)} caméras en parallèle...")
+
+    threads: list[threading.Thread] = []
+    for camera in cfg.cameras:
+        t = threading.Thread(
+            target=run,
+            args=(camera.id,),
+            kwargs={"config": config, "dry_run": dry_run},
+            daemon=True,
+            name=f"thread-{camera.id}",
+        )
+        t.start()
+        threads.append(t)
+        time.sleep(0.5)
+
+    try:
+        while True:
+            time.sleep(1.0)
+    except KeyboardInterrupt:
+        typer.echo("Arrêt de tous les flux caméras.")
+
+
 @app.command()
+
 def probe(camera_id: str, config: str = "config.yaml", seconds: float = 5.0) -> None:
     """Check a camera URL: resolution and measured FPS. Run this before anything else."""
     import time
@@ -187,7 +217,7 @@ def label(photos: str = "data/plates", config: str = "config.yaml") -> None:
     """
     import cv2
 
-    from .evaluate import images_in
+    from .evaluate import images_in, read_image
     from .label import build_page, guess
     from .plates.ocr import PlateOCR
 
@@ -201,9 +231,10 @@ def label(photos: str = "data/plates", config: str = "config.yaml") -> None:
     entries = []
     with typer.progressbar(paths, label="pré-remplissage") as progress:
         for path in progress:
-            image = cv2.imread(str(path))
+            image = read_image(path)
             if image is None:
                 continue
+
             h, w = image.shape[:2]
             raw, _ = ocr.read(image, (0, 0, w, h), pad=0)
             entries.append((path.name, guess(raw or "")))

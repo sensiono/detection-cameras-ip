@@ -1,32 +1,28 @@
 cameras:
   - id: cam-entrance
-    url: 0
+    url: rtsp://user:pass@192.168.1.64:554/Streaming/Channels/101
     task: attendance
   - id: cam-gate
-    url: C:\Users\sofie\OneDrive\Desktop\cut_the_video_keep_each_car_wi.mp4
+    url: rtsp://user:pass@192.168.1.65:554/Streaming/Channels/101
     task: anpr
 
 faces:
   model: buffalo_l
   det_size: 640
   min_det_score: 0.60      # reject blurry / profile faces before matching
-  # Cosine on L2-normalised ArcFace embeddings. 0.37 sits in the gap measured on
-  # 200 LFW identities (max impostor < 0.35, min genuine > 0.35). LFW is frontal and
-  # well lit; re-run `eval-faces` on your own gate photos before trusting it there.
-  match_threshold: 0.37
+  match_threshold: 0.42
   index_path: models/faces.npz
   liveness:
     enabled: true            # false = une photo imprimée suffit pour pointer
     model: models/antispoof.onnx
     scale: 2.7               # recadrage large : l'indice est au bord, pas sur le visage
-    threshold: 0.45
+    threshold: 0.60
 
 
 plates:
   weights: models/plate_yolo.pt
   conf: 0.35
   # Modèle entraîné sur plaques tunisiennes (voir training/README.md).
-  # Le modèle global 'cct-s-v2-global-model' lit 0 % des plaques TN exactement.
   ocr_model: models/tn_ocr.onnx
   ocr_config: training/tn_plate_config.yaml
 
@@ -37,7 +33,7 @@ confirm:
 
 sink:
   url: http://localhost:8000/api/events/
-  token: 34782ab9b3e172ca2b9ddae66e3dfed658a68c87
+  token: your-auth-token-here
   timeout_s: 5.0
 
 

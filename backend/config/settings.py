@@ -57,17 +57,25 @@ TEMPLATES = [
     }
 ]
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME", "vision"),
-        "USER": os.environ.get("DB_USER", "vision"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "vision"),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
-        "OPTIONS": {"charset": "utf8mb4"},
+if os.environ.get("USE_SQLITE") == "1" or "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ.get("DB_NAME", "vision"),
+            "USER": os.environ.get("DB_USER", "vision"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "vision"),
+            "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+            "PORT": os.environ.get("DB_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
 
 AUTH_USER_MODEL = "core.User"
 AUTH_PASSWORD_VALIDATORS = [

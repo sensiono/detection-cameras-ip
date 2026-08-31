@@ -15,11 +15,18 @@ backend/media/
 
 
 
-data/
+# Data directories (keep directory structure, ignore media/images)
+data/**
+!data/
+!data/**/
+!data/**/.gitkeep
+
+
 .DS_Store
 *.pdf
 *.pdf.tmp
 *.egg-info/
 .idea/
 backend/.idea/
+
 

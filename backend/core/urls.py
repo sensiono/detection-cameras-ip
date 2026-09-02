@@ -23,6 +23,7 @@ urlpatterns = [
     path("auth/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("auth/me/", views.me, name="me"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("settings/", views.system_settings, name="system-settings"),
 
     path("reports/attendance.<str:fmt>", views.attendance_report, name="attendance-report"),
     path("", include(router.urls)),

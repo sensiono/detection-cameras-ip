@@ -109,6 +109,19 @@ export const DICT: Translations = {
   'att.timeline_title': { fr: "Journal d'Audit des Passages (Timeline)", en: 'Passage Audit Trail (Timeline)', ar: 'الشريط الزمني لحركات المرور' },
   'att.history_summary': { fr: 'Historique Journalier Consolidé', en: 'Consolidated Daily History', ar: 'السجل اليومي المجمع' },
   'att.departure_update': { fr: 'Mise à jour départ', en: 'Departure Update', ar: 'تحديث الانصراف' },
+  'att.config_schedule': { fr: 'Horaire de pointage', en: 'Work Schedule', ar: 'توقيت الحضور' },
+  'att.late_threshold': { fr: "Heure limite d'arrivée", en: 'Late Cutoff Time', ar: 'التوقيت الأقصى للحضور' },
+  'att.late_threshold_desc': {
+    fr: "Tout pointage après cette heure est automatiquement qualifié 'En retard'.",
+    en: "Any check-in after this time is automatically marked as 'Late'.",
+    ar: 'أي تسجيل حضور بعد هذا التوقيت يعتبر تأخيراً آلياً.'
+  },
+  'att.schedule_saved': {
+    fr: 'Horaire de pointage mis à jour avec succès.',
+    en: 'Work schedule updated successfully.',
+    ar: 'تم تحديث توقيت الحضور بنجاح.'
+  },
+
 
   // Access Logs Page
   'logs.title': { fr: 'Journal des Accès Véhicules (ANPR)', en: 'Vehicle Access Logs (ANPR)', ar: 'سجل دخول وخروج المركبات' },

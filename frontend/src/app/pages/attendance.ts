@@ -34,6 +34,10 @@ function getLocalToday(): string {
         <p class="muted">{{ i18n.t('att.subtitle') }}</p>
       </div>
       <div class="export-actions">
+        <button class="secondary schedule-btn" (click)="openScheduleModal()" [title]="i18n.t('att.config_schedule')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>{{ i18n.t('att.config_schedule') }} : <strong>{{ lateAfter() }}</strong></span>
+        </button>
         <button class="secondary" (click)="download('xlsx')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" x2="16" y1="13" y2="13"/><line x1="8" x2="16" y1="17" y2="17"/><line x1="10" x2="10" y1="9" y2="9"/></svg>
           {{ i18n.t('common.export_excel') }}
@@ -421,6 +425,69 @@ function getLocalToday(): string {
         </div>
       </div>
     }
+
+    <!-- Company Schedule Configuration Modal -->
+    @if (showScheduleModal()) {
+      <div class="modal-backdrop" (click)="showScheduleModal.set(false)">
+        <div class="modal-dialog" style="max-width: 460px;" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <h3 class="modal-title">{{ i18n.t('att.config_schedule') }}</h3>
+            </div>
+            <button class="modal-close" (click)="showScheduleModal.set(false)" [title]="i18n.t('common.close')">✕</button>
+          </div>
+
+          <div class="modal-body">
+            <p class="muted" style="margin: 0; font-size: 0.85rem; line-height: 1.4;">
+              {{ i18n.t('att.late_threshold_desc') }}
+            </p>
+
+            <div class="input-group">
+              <label for="lateInput" style="font-weight: 600; font-size: 0.85rem;">
+                {{ i18n.t('att.late_threshold') }} (HH:MM)
+              </label>
+              <input
+                id="lateInput"
+                type="time"
+                style="padding: 0.6rem 0.8rem; font-size: 1.15rem; font-weight: 700; text-align: center; border-radius: var(--radius-sm);"
+                [ngModel]="editLateAfter()"
+                (ngModelChange)="editLateAfter.set($event)"
+              />
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--muted); letter-spacing: 0.05em;">
+                Horaires d'arrivée usuels :
+              </span>
+              <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                @for (preset of ['08:00', '08:15', '08:30', '08:45', '09:00', '09:30']; track preset) {
+                  <button
+                    type="button"
+                    class="secondary btn-sm"
+                    [style.border-color]="editLateAfter() === preset ? 'var(--brand)' : ''"
+                    [style.background]="editLateAfter() === preset ? 'var(--brand-muted)' : ''"
+                    [style.color]="editLateAfter() === preset ? 'var(--brand)' : ''"
+                    (click)="editLateAfter.set(preset)"
+                  >
+                    {{ preset }}
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding: 1rem 1.25rem; display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--surface-border); background: var(--surface);">
+            <button type="button" class="secondary" (click)="showScheduleModal.set(false)">
+              {{ i18n.t('common.cancel') }}
+            </button>
+            <button type="button" class="primary" (click)="saveSchedule()">
+              {{ i18n.t('common.save') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   `,
   styles: `
     .page-head {
@@ -463,6 +530,20 @@ function getLocalToday(): string {
     .export-actions {
       display: flex;
       gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .schedule-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      border-color: var(--surface-border);
+    }
+    .schedule-btn strong {
+      color: var(--brand);
+      font-family: var(--font-mono);
+      font-weight: 800;
     }
     .view-tabs {
       display: flex;
@@ -892,6 +973,11 @@ export class AttendancePage implements OnInit, OnDestroy {
   readonly pageSize = signal(10);
   readonly currentPage = signal(1);
 
+  readonly lateAfter = signal('08:30');
+  readonly showScheduleModal = signal(false);
+  readonly editLateAfter = signal('08:30');
+
+
   readonly selectedMember = signal<{
     name: string;
     total: number;
@@ -1001,6 +1087,16 @@ export class AttendancePage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.api.members().subscribe((page) => this.members.set(page.results));
 
+    this.api.getSettings().subscribe({
+      next: (s) => {
+        if (s?.late_after) {
+          this.lateAfter.set(s.late_after);
+          this.editLateAfter.set(s.late_after);
+        }
+      },
+      error: () => {},
+    });
+
     this.route.queryParams.subscribe((params) => {
       if (params['statut']) this.statut.set(params['statut']);
       if (params['period'] === 'today') {
@@ -1014,6 +1110,29 @@ export class AttendancePage implements OnInit, OnDestroy {
       this.load();
     });
   }
+
+  openScheduleModal(): void {
+    this.editLateAfter.set(this.lateAfter());
+    this.showScheduleModal.set(true);
+  }
+
+  saveSchedule(): void {
+    const val = this.editLateAfter().trim();
+    if (!val) return;
+    this.api.updateSettings({ late_after: val }).subscribe({
+      next: (res) => {
+        this.lateAfter.set(res.late_after);
+        this.showScheduleModal.set(false);
+        this.toast.success(this.i18n.t('att.schedule_saved'));
+        this.load();
+      },
+      error: (err) => {
+        const msg = err?.error?.detail || "Erreur lors de l'enregistrement de l'horaire.";
+        this.toast.error(msg);
+      },
+    });
+  }
+
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();

@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.db.models import Count, Q
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from . import reports
 from .events_bus import event_bus
 from .ingest import handle_event
-from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, User, Vehicle
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, SystemSetting, User, Vehicle
 from .permissions import IsCameraService, IsSupervisorOrAdmin
 from .serializers import (
     AccessLogSerializer,
@@ -343,4 +344,43 @@ def dashboard(request):
             "active_cameras": active_cameras,
         }
     )
+
+
+@api_view(["GET", "PATCH", "POST"])
+@permission_classes([IsAuthenticated])
+def system_settings(request):
+    """Retrieve or update company-wide configuration parameters."""
+    if request.method == "GET":
+        late_after = SystemSetting.get("late_after", getattr(settings, "LATE_AFTER", "08:30"))
+        company_name = SystemSetting.get("company_name", "Entreprise")
+        return Response({
+            "late_after": late_after,
+            "company_name": company_name,
+        })
+
+    # Only supervisors or admins can modify system settings
+    if not (request.user.is_staff or getattr(request.user, "role", None) in (User.Role.ADMIN, User.Role.SUPERVISOR)):
+        return Response({"detail": "Permission refusée."}, status=status.HTTP_403_FORBIDDEN)
+
+    data = request.data
+    if "late_after" in data:
+        val = str(data["late_after"]).strip()
+        try:
+            datetime.strptime(val, "%H:%M")
+            SystemSetting.set("late_after", val, "Heure limite de pointage à l'heure")
+        except (ValueError, TypeError):
+            return Response(
+                {"detail": "Format d'heure invalide. Utilisez le format HH:MM (ex: 08:30, 09:00)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    if "company_name" in data:
+        SystemSetting.set("company_name", str(data["company_name"]).strip(), "Nom de l'entreprise")
+
+    bump_revision()
+    return Response({
+        "late_after": SystemSetting.get("late_after", getattr(settings, "LATE_AFTER", "08:30")),
+        "company_name": SystemSetting.get("company_name", "Entreprise"),
+    })
+
 

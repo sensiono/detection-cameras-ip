@@ -246,3 +246,55 @@ class EnterpriseGDPRAndResilienceTests(APITestCase):
         assert len(audit_old.audit_hash) == 64
         assert att_old.date == old_date
 
+
+class SystemSettingsTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            username="admin", password="x", role=User.Role.ADMIN
+        )
+        self.member = User.objects.create_user(
+            username="worker", password="x", role=User.Role.MEMBER
+        )
+
+    def test_default_late_after_and_dynamic_update(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.get(reverse("system-settings"))
+        assert res.status_code == 200
+        assert res.data["late_after"] == "08:30"
+
+        # Update late_after to 09:00
+        patch_res = self.client.patch(reverse("system-settings"), {"late_after": "09:00"}, format="json")
+        assert patch_res.status_code == 200
+        assert patch_res.data["late_after"] == "09:00"
+        from .models import SystemSetting
+        assert SystemSetting.get("late_after") == "09:00"
+
+    def test_non_admin_cannot_update_settings(self):
+        self.client.force_authenticate(user=self.member)
+        patch_res = self.client.patch(reverse("system-settings"), {"late_after": "09:00"}, format="json")
+        assert patch_res.status_code == 403
+
+    def test_invalid_time_format_rejected(self):
+        self.client.force_authenticate(user=self.admin)
+        res = self.client.patch(reverse("system-settings"), {"late_after": "invalid-time"}, format="json")
+        assert res.status_code == 400
+
+    def test_attendance_respects_dynamic_late_after(self):
+        from .models import SystemSetting
+        from datetime import datetime
+
+        SystemSetting.set("late_after", "09:00")
+
+        # User arrives at 08:45 (after 08:30 default, but before 09:00 company time)
+        at_time = datetime(2026, 9, 2, 8, 45, tzinfo=timezone.get_current_timezone())
+        handle_event({
+            "kind": "attendance",
+            "camera_id": "cam-1",
+            "subject": str(self.member.id),
+            "confidence": 0.95,
+            "at": at_time,
+        })
+        att = Attendance.objects.get(user=self.member, date=at_time.date())
+        assert att.statut == Attendance.Status.PRESENT  # Not late, because cutoff is 09:00!
+
+

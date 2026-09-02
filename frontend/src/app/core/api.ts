@@ -117,4 +117,13 @@ export class Api {
         URL.revokeObjectURL(url);
       });
   }
+
+  getSettings(): Observable<{ late_after: string; company_name: string }> {
+    return this.http.get<{ late_after: string; company_name: string }>('/api/settings/');
+  }
+
+  updateSettings(settings: { late_after?: string; company_name?: string }): Observable<{ late_after: string; company_name: string }> {
+    return this.http.patch<{ late_after: string; company_name: string }>('/api/settings/', settings);
+  }
 }
+

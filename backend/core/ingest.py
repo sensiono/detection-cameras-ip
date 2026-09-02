@@ -16,7 +16,16 @@ log = logging.getLogger(__name__)
 
 
 def _late_after() -> time:
-    return datetime.strptime(settings.LATE_AFTER, "%H:%M").time()
+    try:
+        from .models import SystemSetting
+        val = SystemSetting.get("late_after", getattr(settings, "LATE_AFTER", "08:30"))
+    except Exception:
+        val = getattr(settings, "LATE_AFTER", "08:30")
+    try:
+        return datetime.strptime(val, "%H:%M").time()
+    except (ValueError, TypeError):
+        return datetime.strptime("08:30", "%H:%M").time()
+
 
 
 @transaction.atomic

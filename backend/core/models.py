@@ -211,3 +211,32 @@ class Camera(models.Model):
     def __str__(self) -> str:
         return f"{self.name} ({self.cam_id}) - {self.task}"
 
+
+class SystemSetting(models.Model):
+    """Company-wide dynamic configuration parameters (e.g. late arrival threshold)."""
+
+    key = models.CharField(max_length=64, unique=True, db_index=True)
+    value = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("key",)
+
+    def __str__(self) -> str:
+        return f"{self.key} = {self.value}"
+
+    @classmethod
+    def get(cls, key: str, default: str = "") -> str:
+        obj = cls.objects.filter(key=key).first()
+        return obj.value if obj else default
+
+    @classmethod
+    def set(cls, key: str, value: str, description: str = "") -> "SystemSetting":
+        obj, _ = cls.objects.update_or_create(
+            key=key,
+            defaults={"value": value, "description": description},
+        )
+        return obj
+
+

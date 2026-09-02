@@ -109,6 +109,9 @@ export const DICT: Translations = {
   'att.timeline_title': { fr: "Journal d'Audit des Passages (Timeline)", en: 'Passage Audit Trail (Timeline)', ar: 'الشريط الزمني لحركات المرور' },
   'att.history_summary': { fr: 'Historique Journalier Consolidé', en: 'Consolidated Daily History', ar: 'السجل اليومي المجمع' },
   'att.departure_update': { fr: 'Mise à jour départ', en: 'Departure Update', ar: 'تحديث الانصراف' },
+  'att.this_record': { fr: 'Ce pointage', en: 'This record', ar: 'هذا اليوم' },
+  'att.all_history': { fr: "Tout l'historique", en: 'All history', ar: 'كامل السجل' },
+  'att.click_to_view_day': { fr: 'Cliquer pour filtrer les captures', en: 'Click to filter captures', ar: 'انقر لتصفية اللقطات' },
   'att.config_schedule': { fr: 'Horaire de pointage', en: 'Work Schedule', ar: 'توقيت الحضور' },
   'att.late_threshold': { fr: "Heure limite d'arrivée", en: 'Late Cutoff Time', ar: 'التوقيت الأقصى للحضور' },
   'att.late_threshold_desc': {

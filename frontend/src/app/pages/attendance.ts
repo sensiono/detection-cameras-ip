@@ -358,14 +358,44 @@ function getLocalToday(): string {
             <!-- Detection Passages Audit Trail Timeline -->
             <div class="member-audit-section">
               <div class="audit-header">
-                <h4>{{ i18n.t('att.timeline_title') }}</h4>
-                <span class="pill audit-count-pill">{{ m.audits.length }} {{ i18n.t('att.captures_count') }}</span>
+                <div>
+                  <h4>{{ i18n.t('att.timeline_title') }}</h4>
+                  @if (auditScope() === 'day' && selectedAuditDate()) {
+                    <span class="muted font-mono" style="font-size: 0.8rem; display: block; margin-top: 2px;">
+                      {{ selectedAuditDate() }}
+                    </span>
+                  }
+                </div>
+                <span class="pill audit-count-pill">
+                  {{ displayedAudits().length }} {{ i18n.t('att.captures_count') }}
+                </span>
               </div>
 
+              <!-- Scope Toggle Switch -->
+              <div class="audit-scope-bar">
+                <button
+                  type="button"
+                  class="scope-btn"
+                  [class.active]="auditScope() === 'day'"
+                  (click)="auditScope.set('day')"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  {{ i18n.t('att.this_record') }} ({{ selectedAuditDate() }})
+                </button>
+                <button
+                  type="button"
+                  class="scope-btn"
+                  [class.active]="auditScope() === 'all'"
+                  (click)="auditScope.set('all')"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {{ i18n.t('att.all_history') }} ({{ m.audits.length }})
+                </button>
+              </div>
 
-              @if (m.audits.length) {
+              @if (displayedAudits().length) {
                 <div class="audit-timeline">
-                  @for (a of m.audits; track a.id) {
+                  @for (a of displayedAudits(); track a.id) {
                     <div class="audit-event-card">
                       <div class="audit-media" (click)="previewAuditSnapshot(a)">
                         @if (a.snapshot) {
@@ -406,8 +436,16 @@ function getLocalToday(): string {
               <h4>{{ i18n.t('att.history_summary') }}</h4>
               <div class="history-list">
                 @for (h of m.history; track h.id) {
-                  <div class="history-item">
-                    <div class="h-date">{{ h.date }}</div>
+                  <div
+                    class="history-item clickable-history-day"
+                    [class.active-history-day]="auditScope() === 'day' && selectedAuditDate() === h.date"
+                    (click)="selectAuditDate(h.date)"
+                    [title]="i18n.t('att.click_to_view_day')"
+                  >
+                    <div class="h-date">
+                      <span class="history-dot"></span>
+                      {{ h.date }}
+                    </div>
                     <div class="h-times">
                       <span class="time-tag in">{{ formatTime(h.check_in) }}</span>
                       @if (h.check_out) {
@@ -944,6 +982,70 @@ function getLocalToday(): string {
       display: flex;
       gap: 0.35rem;
     }
+    .audit-scope-bar {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--surface-card);
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+    }
+    .scope-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.6rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .scope-btn:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+    }
+    .scope-btn.active {
+      color: var(--brand);
+      background: var(--surface-base);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-weight: 700;
+    }
+    .clickable-history-day {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+    }
+    .clickable-history-day:hover {
+      background: var(--surface-hover);
+      border-color: var(--brand);
+      transform: translateX(2px);
+    }
+    .active-history-day {
+      background: rgba(37, 99, 235, 0.08) !important;
+      border: 1px solid rgba(37, 99, 235, 0.4) !important;
+    }
+    .history-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+      transition: all 0.15s ease;
+    }
+    .active-history-day .history-dot {
+      background: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
     .text-xs { font-size: 0.75rem; }
   `,
 })
@@ -980,6 +1082,7 @@ export class AttendancePage implements OnInit, OnDestroy {
 
   readonly selectedMember = signal<{
     name: string;
+    selectedRow: Row;
     total: number;
     onTime: number;
     lates: number;
@@ -987,6 +1090,20 @@ export class AttendancePage implements OnInit, OnDestroy {
     history: Row[];
     audits: AttendanceAudit[];
   } | null>(null);
+
+  readonly auditScope = signal<'day' | 'all'>('day');
+  readonly selectedAuditDate = signal<string>('');
+
+  readonly displayedAudits = computed(() => {
+    const m = this.selectedMember();
+    if (!m) return [];
+    const scope = this.auditScope();
+    const date = this.selectedAuditDate();
+    if (scope === 'day' && date) {
+      return m.audits.filter((a) => a.date === date);
+    }
+    return m.audits;
+  });
 
   readonly availableYears = computed(() => {
     const years = new Set<string>();
@@ -1221,8 +1338,12 @@ export class AttendancePage implements OnInit, OnDestroy {
       }
     });
 
+    this.selectedAuditDate.set(r.date);
+    this.auditScope.set('day');
+
     this.selectedMember.set({
       name: r.user_name || 'Collaborateur',
+      selectedRow: r,
       total,
       onTime,
       lates,
@@ -1239,6 +1360,18 @@ export class AttendancePage implements OnInit, OnDestroy {
           }
         },
       });
+    }
+  }
+
+  selectAuditDate(date: string): void {
+    this.selectedAuditDate.set(date);
+    this.auditScope.set('day');
+    const m = this.selectedMember();
+    if (m) {
+      const matchRow = m.history.find((h) => h.date === date);
+      if (matchRow) {
+        this.selectedMember.update((val) => (val ? { ...val, selectedRow: matchRow } : null));
+      }
     }
   }
 

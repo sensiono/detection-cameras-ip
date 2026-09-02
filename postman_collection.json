@@ -1,0 +1,603 @@
+{
+  "info": {
+    "name": "VISION AI - Backend API Collection",
+    "_postman_id": "c1f7b820-94f2-4b2a-89a3-vision-ai-backend",
+    "description": "Collection complète pour tester l'ensemble des endpoints du backend Django REST (Authentification, Ingestion IA, Présences, Véhicules, Alertes, Paramètres Entreprise, Rapports).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "camera_token",
+      "value": "34782ab9b3e172ca2b9ddae66e3dfed658a68c87",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentification & Profil",
+      "item": [
+        {
+          "name": "Login JWT (Obtenir le token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var data = pm.response.json();",
+                  "if (data.access) {",
+                  "    pm.collectionVariables.set('jwt_token', data.access);",
+                  "    console.log('JWT Token set successfully');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"adminpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Qui suis-je ? (GET /api/auth/me/)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Modifier mon profil (PATCH /api/auth/me/)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"contact@entreprise.tn\",\n  \"nom\": \"Trabelsi\",\n  \"prenom\": \"Sofien\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Changer mot de passe (POST /api/auth/change-password/)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"old_password\": \"adminpassword\",\n  \"new_password\": \"NewSecurePassword2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "change-password",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Ingestion IA (Événements Caméras)",
+      "item": [
+        {
+          "name": "Événement Pointage Collaborateur (Attendance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{camera_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"attendance\",\n  \"camera_id\": \"cam-entrance\",\n  \"subject\": \"1\",\n  \"confidence\": 0.94,\n  \"at\": \"2026-09-02T08:15:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Événement Passage Véhicule (ANPR / LAPI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{camera_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"access\",\n  \"camera_id\": \"cam-gate\",\n  \"subject\": \"159TU8950\",\n  \"confidence\": 0.91,\n  \"at\": \"2026-09-02T08:20:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Événement Fraude Détectée (Anti-Spoofing)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Token {{camera_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"spoof_attempt\",\n  \"camera_id\": \"cam-entrance\",\n  \"subject\": \"\",\n  \"confidence\": 0.25,\n  \"at\": \"2026-09-02T08:25:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Heartbeat Pulse (GET /api/events/pulse/)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/events/pulse/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "pulse",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Paramètres Entreprise (Heure Retard & Nom)",
+      "item": [
+        {
+          "name": "Consulter Paramètres (GET /api/settings/)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "settings",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mettre à jour Heure Retard (PATCH /api/settings/)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"late_after\": \"09:00\",\n  \"company_name\": \"Vision AI Systems\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "settings",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Tableau de Bord & Métriques",
+      "item": [
+        {
+          "name": "Statistiques Dashboard (KPIs)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dashboard",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Présences & Traçabilité SHA-256",
+      "item": [
+        {
+          "name": "Liste des Présences (Attendance)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/?statut=present",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "attendance",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "statut",
+                  "value": "present"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Journal d'Audit Immuable SHA-256",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance-audits/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "attendance-audits",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Contrôle d'Accès Véhicules & Alertes",
+      "item": [
+        {
+          "name": "Journal des Passages Véhicules (AccessLog)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/logs/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "logs",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Liste des Véhicules Autorisés (Whitelist)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ajouter un Véhicule Autorisé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plaque\": \"159TU8950\",\n  \"proprietaire\": \"Sofien Trabelsi\",\n  \"autorise\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alertes de Sécurité (Alerts)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Marquer toutes les alertes comme vues",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/mark_all_seen/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "alerts",
+                "mark_all_seen",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Rapports & Exports (Excel / PDF)",
+      "item": [
+        {
+          "name": "Export Rapport Excel (.xlsx)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/attendance.xlsx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "attendance.xlsx"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Rapport PDF (.pdf)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/attendance.pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "attendance.pdf"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

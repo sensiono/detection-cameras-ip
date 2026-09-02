@@ -165,6 +165,20 @@ Types d'événements supportés :
 # Tests unitaires du service Vision IA (40 tests)
 pytest
 
-# Tests unitaires du backend Django (17 tests)
+# Tests unitaires du backend Django (33 tests)
 docker compose exec backend python manage.py test
 ```
+
+---
+
+## 9. Collection Postman Incluse
+
+Le fichier [`postman_collection.json`](postman_collection.json) à la racine permet de tester et visualiser immédiatement les réponses de l'ensemble des endpoints REST directement dans **Postman** (Auth JWT, Profil & validation d'e-mail, Sécurité du mot de passe, Ingestion IA, Seuil d'horaire dynamique, Présences, Véhicules, Alertes et Rapports Excel/PDF).
+
+---
+
+## 10. Guides Utilisateurs (Documentation & PDF)
+
+- **Version Française** : [GUIDE_UTILISATEUR.md](GUIDE_UTILISATEUR.md) / [**GUIDE_UTILISATEUR.pdf**](GUIDE_UTILISATEUR.pdf)
+- **النسخة العربية** : [GUIDE_UTILISATEUR_AR.md](GUIDE_UTILISATEUR_AR.md) / [**GUIDE_UTILISATEUR_AR.pdf**](GUIDE_UTILISATEUR_AR.pdf)
+

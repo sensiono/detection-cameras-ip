@@ -1,9 +1,9 @@
 cameras:
   - id: cam-entrance
-    url: rtsp://user:pass@192.168.1.64:554/Streaming/Channels/101
+    url: 0
     task: attendance
   - id: cam-gate
-    url: rtsp://user:pass@192.168.1.65:554/Streaming/Channels/101
+    url: C:\Users\sofie\OneDrive\Desktop\cut_the_video_keep_each_car_wi.mp4
     task: anpr
 
 faces:
@@ -33,7 +33,7 @@ confirm:
 
 sink:
   url: http://localhost:8000/api/events/
-  token: your-auth-token-here
+  token: 34782ab9b3e172ca2b9ddae66e3dfed658a68c87
   timeout_s: 5.0
 
 

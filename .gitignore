@@ -23,7 +23,6 @@ data/**
 
 
 .DS_Store
-*.pdf
 *.pdf.tmp
 *.egg-info/
 .idea/

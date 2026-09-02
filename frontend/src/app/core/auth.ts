@@ -6,6 +6,7 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { User } from './models';
 
 const ACCESS = 'vision.access';
+const USER_KEY = 'vision.user';
 
 @Injectable({ providedIn: 'root' })
 export class Auth {
@@ -14,7 +15,7 @@ export class Auth {
 
   /** Read once at startup so a refresh does not log you out. */
   readonly token = signal<string | null>(localStorage.getItem(ACCESS));
-  readonly user = signal<User | null>(null);
+  readonly user = signal<User | null>(this.getStoredUser());
 
   constructor() {
     if (this.token()) {
@@ -22,6 +23,24 @@ export class Auth {
         error: () => {},
       });
     }
+  }
+
+  private getStoredUser(): User | null {
+    try {
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private setStoredUser(u: User | null): void {
+    if (u) {
+      localStorage.setItem(USER_KEY, JSON.stringify(u));
+    } else {
+      localStorage.removeItem(USER_KEY);
+    }
+    this.user.set(u);
   }
 
   login(username: string, password: string): Observable<{ access: string }> {
@@ -39,11 +58,24 @@ export class Auth {
   }
 
   loadUser(): Observable<User> {
-    return this.http.get<User>('/api/auth/me/').pipe(tap((u) => this.user.set(u)));
+    return this.http.get<User>('/api/auth/me/').pipe(
+      tap((u) => this.setStoredUser(u)),
+    );
+  }
+
+  updateProfile(data: { username?: string; email?: string; nom?: string; prenom?: string }): Observable<User> {
+    return this.http.patch<User>('/api/auth/me/', data).pipe(
+      tap((u) => this.setStoredUser(u)),
+    );
+  }
+
+  changePassword(data: { old_password: string; new_password: string }): Observable<{ detail: string }> {
+    return this.http.post<{ detail: string }>('/api/auth/change-password/', data);
   }
 
   logout(): void {
     localStorage.removeItem(ACCESS);
+    localStorage.removeItem(USER_KEY);
     this.token.set(null);
     this.user.set(null);
     this.router.navigate(['/login']);

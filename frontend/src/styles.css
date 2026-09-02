@@ -561,15 +561,16 @@ button.danger:hover:not(:disabled) {
    ========================================================================== */
 .toast-container {
   position: fixed;
-  bottom: 24px;
+  top: 24px;
   right: 24px;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  z-index: 2000;
-  max-width: 400px;
+  z-index: 99999;
+  max-width: 420px;
   pointer-events: none;
 }
+
 
 .toast-card, .toast-item {
   pointer-events: auto;
@@ -814,24 +815,25 @@ button.danger:hover:not(:disabled) {
 .lang-selector {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
   background: var(--surface);
   border: 1px solid var(--surface-border);
   border-radius: var(--radius-sm);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--fg-secondary);
+  flex-shrink: 0;
 }
 
 .lang-selector select {
   background: transparent;
   border: none;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--fg);
   cursor: pointer;
-  padding: 0.1rem 0.2rem;
+  padding: 0 0.1rem;
   outline: none;
 }
+
 

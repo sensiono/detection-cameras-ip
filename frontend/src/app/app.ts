@@ -63,7 +63,6 @@ import { ToastService } from './core/toast';
           <div class="user-panel">
             <!-- Language Selector -->
             <div class="lang-selector" title="Changer la langue / Change language / تغيير اللغة">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               <select [ngModel]="i18n.currentLang()" (ngModelChange)="onLangChange($event)">
                 <option value="fr">FR</option>
                 <option value="en">EN</option>
@@ -87,14 +86,25 @@ import { ToastService } from './core/toast';
             </button>
 
             @if (auth.user(); as u) {
-              <div class="user-badge">
-                <div class="avatar">{{ u.username[0].toUpperCase() }}</div>
+              <div class="user-badge clickable" (click)="openSettingsModal()" [title]="i18n.t('settings.title')">
+                <div class="avatar">{{ (u.username || 'U')[0].toUpperCase() }}</div>
                 <div class="user-meta">
                   <span class="uname">{{ u.username }}</span>
                   <span class="urole">{{ u.role }}</span>
                 </div>
+                <svg class="gear-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+            } @else if (auth.token()) {
+              <div class="user-badge clickable" (click)="openSettingsModal()" [title]="i18n.t('settings.title')">
+                <div class="avatar">U</div>
+                <div class="user-meta">
+                  <span class="uname">Mon Profil</span>
+                  <span class="urole">Paramètres</span>
+                </div>
+                <svg class="gear-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               </div>
             }
+
 
             <button class="logout-btn" (click)="auth.logout()" [title]="i18n.t('nav.logout')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -180,7 +190,251 @@ import { ToastService } from './core/toast';
         }
       </div>
     }
+
+    <!-- User Settings & Profile Modal -->
+    @if (showSettingsModal()) {
+      <div class="modal-backdrop" (click)="closeSettingsModal()">
+        <div class="modal-dialog settings-modal-dialog" (click)="$event.stopPropagation()">
+          <div class="settings-header-redesign">
+            <div class="settings-modal-title">
+              <div class="settings-icon-circle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div>
+                <h3>{{ i18n.t('settings.title') }}</h3>
+                <p class="settings-subtitle">Configuration du compte utilisateur & règles d'horaires</p>
+              </div>
+            </div>
+            <button class="modal-close" (click)="closeSettingsModal()" [title]="i18n.t('common.close')">✕</button>
+          </div>
+
+          <!-- Inline Top Alert if action succeeded -->
+          @if (settingsSuccessMsg()) {
+            <div class="settings-alert-success">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>{{ settingsSuccessMsg() }}</span>
+            </div>
+          }
+
+          <!-- Segmented Tab Bar (No scrollbar) -->
+          <div class="settings-segmented-bar">
+            <button
+              type="button"
+              class="settings-segment-btn"
+              [class.active]="settingsTab() === 'profile'"
+              (click)="settingsTab.set('profile')"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
+              <span>{{ i18n.t('settings.tab_profile') }}</span>
+            </button>
+            <button
+              type="button"
+              class="settings-segment-btn"
+              [class.active]="settingsTab() === 'security'"
+              (click)="settingsTab.set('security')"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>{{ i18n.t('settings.tab_security') }}</span>
+            </button>
+            @if (auth.canEdit) {
+              <button
+                type="button"
+                class="settings-segment-btn"
+                [class.active]="settingsTab() === 'company'"
+                (click)="settingsTab.set('company')"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>{{ i18n.t('settings.tab_company') }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="settings-modal-body">
+            <!-- TAB 1: User Profile Form -->
+            @if (settingsTab() === 'profile') {
+              <div class="user-hero-card">
+                <div class="hero-avatar-large">{{ (formUsername() || 'U')[0].toUpperCase() }}</div>
+                <div class="hero-details">
+                  <div class="hero-name-row">
+                    <h4>{{ formPrenom() || 'Utilisateur' }} {{ formNom() }}</h4>
+                    <span class="role-badge">{{ auth.user()?.role }}</span>
+                  </div>
+                  <span class="hero-email">{{ formEmail() || 'Aucune adresse e-mail renseignée' }}</span>
+                </div>
+              </div>
+
+              <div class="form-grid-2col">
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.username') }}</label>
+                  <input
+                    type="text"
+                    class="clean-input"
+                    [ngModel]="formUsername()"
+                    (ngModelChange)="formUsername.set($event)"
+                    placeholder="Nom d'utilisateur"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.email') }}</label>
+                  <input
+                    type="email"
+                    class="clean-input"
+                    [ngModel]="formEmail()"
+                    (ngModelChange)="formEmail.set($event)"
+                    placeholder="nom@entreprise.tn"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.firstname') }}</label>
+                  <input
+                    type="text"
+                    class="clean-input"
+                    [ngModel]="formPrenom()"
+                    (ngModelChange)="formPrenom.set($event)"
+                    placeholder="Prénom"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.lastname') }}</label>
+                  <input
+                    type="text"
+                    class="clean-input"
+                    [ngModel]="formNom()"
+                    (ngModelChange)="formNom.set($event)"
+                    placeholder="Nom"
+                  />
+                </div>
+              </div>
+
+              <div class="settings-modal-footer">
+                <button type="button" class="secondary" (click)="closeSettingsModal()">{{ i18n.t('common.cancel') }}</button>
+                <button type="button" class="primary save-btn" (click)="saveProfile()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {{ i18n.t('settings.save_profile') }}
+                </button>
+              </div>
+            }
+
+            <!-- TAB 2: Change Password Form -->
+            @if (settingsTab() === 'security') {
+              <div class="form-fields-vertical">
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.old_password') }}</label>
+                  <input
+                    type="password"
+                    class="clean-input"
+                    [ngModel]="formOldPassword()"
+                    (ngModelChange)="formOldPassword.set($event)"
+                    placeholder="Mot de passe actuel"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.new_password') }}</label>
+                  <input
+                    type="password"
+                    class="clean-input"
+                    [ngModel]="formNewPassword()"
+                    (ngModelChange)="formNewPassword.set($event)"
+                    placeholder="Nouveau mot de passe"
+                  />
+                </div>
+
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.confirm_password') }}</label>
+                  <input
+                    type="password"
+                    class="clean-input"
+                    [ngModel]="formConfirmPassword()"
+                    (ngModelChange)="formConfirmPassword.set($event)"
+                    placeholder="Confirmez le nouveau mot de passe"
+                  />
+                </div>
+
+                <div class="security-hint-box">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span>Le mot de passe doit comporter un minimum de 6 caractères.</span>
+                </div>
+              </div>
+
+              <div class="settings-modal-footer">
+                <button type="button" class="secondary" (click)="closeSettingsModal()">{{ i18n.t('common.cancel') }}</button>
+                <button type="button" class="primary save-btn" (click)="savePassword()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {{ i18n.t('settings.change_password') }}
+                </button>
+              </div>
+            }
+
+            <!-- TAB 3: Company Settings (Admin & Supervisor) -->
+            @if (settingsTab() === 'company') {
+              <div class="form-fields-vertical">
+                <div class="form-field">
+                  <label>{{ i18n.t('settings.company_name') }}</label>
+                  <input
+                    type="text"
+                    class="clean-input"
+                    [ngModel]="formCompanyName()"
+                    (ngModelChange)="formCompanyName.set($event)"
+                    placeholder="Nom de l'entreprise"
+                  />
+                </div>
+
+                <div class="highlight-schedule-card">
+                  <div class="schedule-card-header">
+                    <div class="schedule-icon-pill">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                      <span class="schedule-card-title">{{ i18n.t('att.late_threshold') }}</span>
+                      <p class="schedule-card-desc">{{ i18n.t('att.late_threshold_desc') }}</p>
+                    </div>
+                  </div>
+
+                  <div class="time-picker-wrapper">
+                    <input
+                      type="time"
+                      class="clean-time-input"
+                      [ngModel]="formLateAfter()"
+                      (ngModelChange)="formLateAfter.set($event)"
+                    />
+                  </div>
+
+                  <div class="presets-section">
+                    <span class="presets-title">⚡ Raccourcis horaires usuels :</span>
+                    <div class="presets-flex">
+                      @for (preset of ['08:00', '08:15', '08:30', '08:45', '09:00', '09:30']; track preset) {
+                        <button
+                          type="button"
+                          class="preset-button"
+                          [class.active]="formLateAfter() === preset"
+                          (click)="formLateAfter.set(preset)"
+                        >
+                          {{ preset }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-modal-footer">
+                <button type="button" class="secondary" (click)="closeSettingsModal()">{{ i18n.t('common.cancel') }}</button>
+                <button type="button" class="primary save-btn" (click)="saveCompanySettings()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  {{ i18n.t('settings.save_company') }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
   `,
+
 
   styles: `
     .app-header {
@@ -282,6 +536,11 @@ import { ToastService } from './core/toast';
       font-size: 0.78rem;
       font-weight: 700;
       color: var(--fg);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cam-text {
+      white-space: nowrap;
     }
     .pulse-dot {
       width: 8px;
@@ -316,10 +575,29 @@ import { ToastService } from './core/toast';
       display: flex;
       align-items: center;
       gap: 0.6rem;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.55rem;
       border-radius: var(--radius-sm);
       background: var(--surface);
       border: 1px solid var(--surface-border);
+    }
+    .user-badge.clickable {
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .user-badge.clickable:hover {
+      background: var(--surface-hover);
+      border-color: var(--brand);
+      box-shadow: 0 0 10px var(--brand-glow);
+    }
+    .gear-icon {
+      color: var(--muted);
+      transition: transform 0.25s ease, color 0.2s ease;
+      margin-left: 0.15rem;
+    }
+    .user-badge.clickable:hover .gear-icon {
+      color: var(--brand);
+      transform: rotate(60deg);
     }
     .avatar {
       width: 28px;
@@ -458,6 +736,317 @@ import { ToastService } from './core/toast';
     .confirm-btn-action:hover {
       transform: translateY(-1px);
     }
+
+    /* Redesigned Settings Modal Styles */
+    .settings-modal-dialog {
+      max-width: 580px;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .settings-header-redesign {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface);
+    }
+    .settings-icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--brand-muted);
+      color: var(--brand);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 15px var(--brand-glow);
+    }
+    .settings-modal-title {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .settings-modal-title h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .settings-subtitle {
+      margin: 0.15rem 0 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .settings-alert-success {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 1rem 1.5rem 0 1.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--ok-bg);
+      border: 1px solid var(--ok);
+      color: var(--ok);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: fadeIn 0.2s ease;
+    }
+    .settings-segmented-bar {
+      display: flex;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 0.35rem;
+      margin: 1.25rem 1.5rem 0 1.5rem;
+      gap: 0.35rem;
+    }
+    .settings-segment-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--fg-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+    .settings-segment-btn:hover {
+      color: var(--fg);
+      background: var(--surface-hover);
+    }
+    .settings-segment-btn.active {
+      color: var(--brand);
+      background: var(--surface);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    .settings-modal-body {
+      padding: 1.25rem 1.5rem 0 1.5rem;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .user-hero-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.15rem;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+    }
+    .hero-avatar-large {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 12px var(--brand-glow);
+      flex-shrink: 0;
+    }
+    .hero-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .hero-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .hero-name-row h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .role-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background: var(--brand-muted);
+      color: var(--brand);
+    }
+    .hero-email {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .form-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+    .form-fields-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .form-field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .clean-input {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      background: var(--surface-card);
+      color: var(--fg);
+      font-size: 0.88rem;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+    .clean-input:focus {
+      border-color: var(--brand);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px var(--brand-muted);
+    }
+    .security-hint-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-card);
+      border: 1px dashed var(--surface-border);
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .highlight-schedule-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1.15rem;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+    }
+    .schedule-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .schedule-icon-pill {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--brand-muted);
+      color: var(--brand);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .schedule-card-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+    .schedule-card-desc {
+      margin: 0.15rem 0 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .time-picker-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 0.35rem 0;
+    }
+    .clean-time-input {
+      padding: 0.6rem 1.25rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      text-align: center;
+      font-family: var(--font-mono);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--brand);
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: 0 0 12px var(--brand-muted);
+      outline: none;
+    }
+    .presets-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.2rem;
+    }
+    .presets-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .presets-flex {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .preset-button {
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      background: var(--surface);
+      color: var(--fg-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-button:hover {
+      background: var(--surface-hover);
+      color: var(--fg);
+      border-color: var(--brand);
+    }
+    .preset-button.active {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 2px 8px var(--brand-glow);
+    }
+    .settings-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem 1.25rem 1.5rem;
+      border-top: 1px solid var(--surface-border);
+      background: var(--surface);
+      margin-top: 1rem;
+    }
+    .save-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
   `,
 })
 export class App implements OnInit, OnDestroy {
@@ -473,9 +1062,31 @@ export class App implements OnInit, OnDestroy {
   readonly activeCamerasCount = signal<number>(2);
   private sub: any = null;
 
+  readonly showSettingsModal = signal(false);
+  readonly settingsTab = signal<'profile' | 'security' | 'company'>('profile');
+  readonly settingsSuccessMsg = signal('');
+
+  // Profile Form
+  readonly formUsername = signal('');
+  readonly formEmail = signal('');
+  readonly formNom = signal('');
+  readonly formPrenom = signal('');
+
+  // Password Form
+  readonly formOldPassword = signal('');
+  readonly formNewPassword = signal('');
+  readonly formConfirmPassword = signal('');
+
+  // Company Form
+  readonly formCompanyName = signal('');
+  readonly formLateAfter = signal('08:30');
+
   ngOnInit(): void {
     if (this.auth.token()) {
       this.refreshCameras();
+      this.auth.loadUser().subscribe({
+        error: () => {},
+      });
     }
     this.sub = this.stream.updates$.subscribe(() => {
       this.refreshCameras();
@@ -496,6 +1107,132 @@ export class App implements OnInit, OnDestroy {
     });
   }
 
+  openSettingsModal(): void {
+    const u = this.auth.user();
+    if (u) {
+      this.formUsername.set(u.username || '');
+      this.formEmail.set(u.email || '');
+      this.formNom.set(u.nom || '');
+      this.formPrenom.set(u.prenom || '');
+    }
+    this.formOldPassword.set('');
+    this.formNewPassword.set('');
+    this.formConfirmPassword.set('');
+    this.settingsSuccessMsg.set('');
+
+    this.api.getSettings().subscribe({
+      next: (s) => {
+        if (s?.late_after) this.formLateAfter.set(s.late_after);
+        if (s?.company_name) this.formCompanyName.set(s.company_name);
+      },
+      error: () => {},
+    });
+
+    this.settingsTab.set('profile');
+    this.showSettingsModal.set(true);
+  }
+
+  closeSettingsModal(): void {
+    this.showSettingsModal.set(false);
+  }
+
+  saveProfile(): void {
+    const username = this.formUsername().trim();
+    const email = this.formEmail().trim();
+    const nom = this.formNom().trim();
+    const prenom = this.formPrenom().trim();
+
+    if (!username) {
+      this.toast.warn("Le nom d'utilisateur est obligatoire.");
+      return;
+    }
+
+    if (email) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        this.toast.warn("Format d'adresse e-mail invalide (ex: contact@entreprise.tn).");
+        return;
+      }
+    }
+
+    const payload = { username, email, nom, prenom };
+    this.auth.updateProfile(payload).subscribe({
+      next: () => {
+        const msg = this.i18n.t('settings.profile_saved');
+        this.toast.success(msg);
+        this.settingsSuccessMsg.set(msg);
+        setTimeout(() => this.settingsSuccessMsg.set(''), 4500);
+      },
+      error: (err) => {
+        const msg = err?.error?.detail || "Erreur lors de la mise à jour du profil.";
+        this.toast.error(msg);
+      },
+    });
+  }
+
+  savePassword(): void {
+    const old_pwd = this.formOldPassword();
+    const new_pwd = this.formNewPassword();
+    const confirm = this.formConfirmPassword();
+
+    if (!old_pwd) {
+      this.toast.warn("Veuillez saisir votre mot de passe actuel.");
+      return;
+    }
+    if (!new_pwd) {
+      this.toast.warn("Veuillez saisir le nouveau mot de passe.");
+      return;
+    }
+    if (new_pwd.length < 6) {
+      this.toast.warn("Le nouveau mot de passe doit comporter au moins 6 caractères.");
+      return;
+    }
+    if (old_pwd === new_pwd) {
+      this.toast.warn("Le nouveau mot de passe doit être différent de l'ancien.");
+      return;
+    }
+    if (new_pwd !== confirm) {
+      this.toast.error(this.i18n.t('settings.password_mismatch'));
+      return;
+    }
+
+    this.auth.changePassword({ old_password: old_pwd, new_password: new_pwd }).subscribe({
+      next: () => {
+        const msg = this.i18n.t('settings.password_saved');
+        this.toast.success(msg);
+        this.settingsSuccessMsg.set(msg);
+        setTimeout(() => this.settingsSuccessMsg.set(''), 4500);
+        this.formOldPassword.set('');
+        this.formNewPassword.set('');
+        this.formConfirmPassword.set('');
+      },
+      error: (err) => {
+        const msg = err?.error?.detail || "Erreur lors de la modification du mot de passe.";
+        this.toast.error(msg);
+      },
+    });
+  }
+
+  saveCompanySettings(): void {
+    const payload = {
+      company_name: this.formCompanyName().trim(),
+      late_after: this.formLateAfter().trim(),
+    };
+    this.api.updateSettings(payload).subscribe({
+      next: (s) => {
+        if (s?.late_after) this.formLateAfter.set(s.late_after);
+        if (s?.company_name) this.formCompanyName.set(s.company_name);
+        const msg = this.i18n.t('settings.company_saved');
+        this.toast.success(msg);
+        this.settingsSuccessMsg.set(msg);
+        setTimeout(() => this.settingsSuccessMsg.set(''), 4500);
+      },
+      error: (err) => {
+        const msg = err?.error?.detail || "Erreur lors de l'enregistrement des paramètres.";
+        this.toast.error(msg);
+      },
+    });
+  }
 
   onLangChange(lang: Lang): void {
     this.i18n.setLang(lang);
@@ -506,8 +1243,10 @@ export class App implements OnInit, OnDestroy {
   @HostListener('window:keydown.escape')
   onEscape(): void {
     this.modal.close();
+    this.showSettingsModal.set(false);
   }
 }
+
 
 
 export const AppComponent = App;

@@ -183,7 +183,30 @@ export const DICT: Translations = {
   'login.password': { fr: 'Mot de passe', en: 'Password', ar: 'كلمة المرور' },
   'login.submit': { fr: 'Se connecter', en: 'Sign In', ar: 'تسجيل الدخول' },
   'login.error': { fr: 'Identifiants invalides ou serveur indisponible', en: 'Invalid credentials or server unavailable', ar: 'بيانات الاعتماد غير صحيحة أو الخادم غير متاح' },
+
+  // Settings & Profile Modal
+  'settings.title': { fr: 'Paramètres du Compte & Système', en: 'Account & System Settings', ar: 'إعدادات الحساب والنظام' },
+  'settings.tab_profile': { fr: 'Mon Profil', en: 'My Profile', ar: 'الملف الشخصي' },
+  'settings.tab_security': { fr: 'Sécurité & Mot de passe', en: 'Security & Password', ar: 'الأمان وكلمة المرور' },
+  'settings.tab_company': { fr: 'Paramètres Entreprise', en: 'Company Settings', ar: 'إعدادات المؤسسة' },
+  'settings.username': { fr: "Nom d'utilisateur", en: 'Username', ar: 'اسم المستخدم' },
+  'settings.email': { fr: 'Adresse e-mail', en: 'Email address', ar: 'البريد الإلكتروني' },
+  'settings.firstname': { fr: 'Prénom', en: 'First name', ar: 'الاسم' },
+  'settings.lastname': { fr: 'Nom', en: 'Last name', ar: 'اللقب' },
+  'settings.role': { fr: 'Rôle dans le système', en: 'System role', ar: 'الدور في النظام' },
+  'settings.old_password': { fr: 'Ancien mot de passe', en: 'Current password', ar: 'كلمة المرور الحالية' },
+  'settings.new_password': { fr: 'Nouveau mot de passe', en: 'New password', ar: 'كلمة المرور الجديدة' },
+  'settings.confirm_password': { fr: 'Confirmer le mot de passe', en: 'Confirm new password', ar: 'تأكيد كلمة المرور' },
+  'settings.company_name': { fr: "Nom de l'entreprise", en: 'Company name', ar: 'اسم المؤسسة' },
+  'settings.profile_saved': { fr: 'Profil mis à jour avec succès.', en: 'Profile updated successfully.', ar: 'تم تحديث الملف الشخصي بنجاح.' },
+  'settings.password_saved': { fr: 'Mot de passe modifié avec succès.', en: 'Password changed successfully.', ar: 'تم تغيير كلمة المرور بنجاح.' },
+  'settings.company_saved': { fr: 'Paramètres entreprise mis à jour.', en: 'Company settings updated.', ar: 'تم تحديث إعدادات المؤسسة.' },
+  'settings.password_mismatch': { fr: 'Les mots de passe ne correspondent pas.', en: 'Passwords do not match.', ar: 'كلمات المرور غير متطابقة.' },
+  'settings.save_profile': { fr: 'Mettre à jour le profil', en: 'Update Profile', ar: 'تحديث الملف الشخصي' },
+  'settings.change_password': { fr: 'Changer le mot de passe', en: 'Change Password', ar: 'تغيير كلمة المرور' },
+  'settings.save_company': { fr: 'Enregistrer les paramètres', en: 'Save Settings', ar: 'حفظ الإعدادات' },
 };
+
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {

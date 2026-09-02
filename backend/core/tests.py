@@ -298,3 +298,92 @@ class SystemSettingsTests(APITestCase):
         assert att.statut == Attendance.Status.PRESENT  # Not late, because cutoff is 09:00!
 
 
+class UserProfileAndSecurityTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="sofien", password="old_password_123", email="sofien@test.tn", nom="Trabelsi", prenom="Sofien"
+        )
+        self.other_user = User.objects.create_user(
+            username="existing_user", password="pwd", email="other@test.tn"
+        )
+
+    def test_get_me_returns_profile_and_email(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.get(reverse("me"))
+        assert res.status_code == 200
+        assert res.data["username"] == "sofien"
+        assert res.data["email"] == "sofien@test.tn"
+        assert res.data["nom"] == "Trabelsi"
+
+    def test_patch_me_updates_details(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.patch(reverse("me"), {
+            "username": "sofien_new",
+            "email": "new_email@test.tn",
+            "prenom": "Sofi",
+            "nom": "Trabelsi-New",
+        }, format="json")
+        assert res.status_code == 200
+        self.user.refresh_from_db()
+        assert self.user.username == "sofien_new"
+        assert self.user.email == "new_email@test.tn"
+        assert self.user.prenom == "Sofi"
+        assert self.user.nom == "Trabelsi-New"
+
+    def test_patch_me_rejects_duplicate_username(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.patch(reverse("me"), {"username": "existing_user"}, format="json")
+        assert res.status_code == 400
+        assert "déjà utilisé" in res.data["detail"]
+
+    def test_patch_me_rejects_duplicate_email(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.patch(reverse("me"), {"email": "other@test.tn"}, format="json")
+        assert res.status_code == 400
+        assert "déjà utilisée" in res.data["detail"]
+
+    def test_patch_me_rejects_invalid_email_format(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.patch(reverse("me"), {"email": "not-an-email"}, format="json")
+        assert res.status_code == 400
+        assert "invalide" in res.data["detail"]
+
+    def test_change_password_success(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(reverse("change-password"), {
+            "old_password": "old_password_123",
+            "new_password": "new_secure_pwd_456",
+        }, format="json")
+        assert res.status_code == 200
+        self.user.refresh_from_db()
+        assert self.user.check_password("new_secure_pwd_456")
+
+    def test_change_password_wrong_old_password(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(reverse("change-password"), {
+            "old_password": "wrong_password",
+            "new_password": "new_secure_pwd_456",
+        }, format="json")
+        assert res.status_code == 400
+        assert "incorrect" in res.data["detail"]
+
+    def test_change_password_rejects_same_password(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(reverse("change-password"), {
+            "old_password": "old_password_123",
+            "new_password": "old_password_123",
+        }, format="json")
+        assert res.status_code == 400
+        assert "différent" in res.data["detail"]
+
+    def test_change_password_rejects_too_short(self):
+        self.client.force_authenticate(user=self.user)
+        res = self.client.post(reverse("change-password"), {
+            "old_password": "old_password_123",
+            "new_password": "123",
+        }, format="json")
+        assert res.status_code == 400
+        assert "au moins 6 caractères" in res.data["detail"]
+
+
+

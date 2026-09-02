@@ -22,6 +22,7 @@ urlpatterns = [
     path("auth/login/", TokenObtainPairView.as_view(), name="login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("auth/me/", views.me, name="me"),
+    path("auth/change-password/", views.change_password, name="change-password"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("settings/", views.system_settings, name="system-settings"),
 

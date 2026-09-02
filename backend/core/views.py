@@ -87,10 +87,96 @@ def events(request):
     return Response(handle_event(serializer.validated_data), status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET"])
+@api_view(["GET", "PATCH", "PUT"])
+@permission_classes([IsAuthenticated])
 def me(request):
-    """Who am I? The dashboard needs the role to know what to render."""
-    return Response(UserSerializer(request.user).data)
+    """Who am I? Also supports updating own profile details (username, email, prenom, nom)."""
+    user = request.user
+    if request.method in ("PATCH", "PUT"):
+        data = request.data
+        if "username" in data:
+            new_username = str(data["username"]).strip()
+            if not new_username:
+                return Response(
+                    {"detail": "Le nom d'utilisateur est obligatoire."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if new_username != user.username:
+                if User.objects.filter(username__iexact=new_username).exclude(pk=user.pk).exists():
+                    return Response(
+                        {"detail": "Ce nom d'utilisateur est déjà utilisé."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                user.username = new_username
+        if "email" in data:
+            new_email = str(data["email"]).strip()
+            if new_email and new_email.lower() != (user.email or "").lower():
+                from django.core.validators import validate_email
+                from django.core.exceptions import ValidationError
+                try:
+                    validate_email(new_email)
+                except ValidationError:
+                    return Response(
+                        {"detail": "Format d'adresse e-mail invalide."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                if User.objects.filter(email__iexact=new_email).exclude(pk=user.pk).exists():
+                    return Response(
+                        {"detail": "Cette adresse e-mail est déjà utilisée par un autre compte."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                user.email = new_email
+            elif not new_email:
+                user.email = ""
+        if "prenom" in data:
+            user.prenom = str(data["prenom"]).strip()
+        if "nom" in data:
+            user.nom = str(data["nom"]).strip()
+        user.save()
+        bump_revision()
+    return Response(UserSerializer(user).data)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """Change password for the authenticated user."""
+    user = request.user
+    old_pwd = request.data.get("old_password")
+    new_pwd = request.data.get("new_password")
+    if not old_pwd or not new_pwd:
+        return Response(
+            {"detail": "L'ancien mot de passe et le nouveau mot de passe sont requis."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if not user.check_password(old_pwd):
+        return Response(
+            {"detail": "L'ancien mot de passe est incorrect."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if old_pwd == new_pwd:
+        return Response(
+            {"detail": "Le nouveau mot de passe doit être différent de l'ancien."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if len(str(new_pwd)) < 6:
+        return Response(
+            {"detail": "Le nouveau mot de passe doit comporter au moins 6 caractères."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    from django.contrib.auth.password_validation import validate_password
+    from django.core.exceptions import ValidationError
+    try:
+        validate_password(new_pwd, user=user)
+    except ValidationError as e:
+        return Response(
+            {"detail": " ".join(e.messages)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    user.set_password(new_pwd)
+    user.save()
+    return Response({"detail": "Mot de passe modifié avec succès."})
+
 
 
 def rebuild_face_gallery():

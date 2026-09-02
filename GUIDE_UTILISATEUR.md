@@ -149,7 +149,28 @@ Depuis la page **Présences** :
 
 ---
 
-## 11. Foire Aux Questions (FAQ) & Bonnes Pratiques
+## 11. Paramètres Utilisateur, Sécurité & Configuration Entreprise
+
+Accessible directement en cliquant sur votre **Pastille Utilisateur / Avatar** dans la barre supérieure de navigation :
+
+### 1. Mon Profil
+* Modifiez votre **Nom d'utilisateur**, **Adresse e-mail**, **Prénom** et **Nom**.
+* **Validation & Détection de Doublons** : Le système vérifie en temps réel la validité syntaxique de l'adresse e-mail et interdit l'utilisation d'une adresse e-mail ou d'un nom d'utilisateur déjà attribué à un autre compte.
+
+### 2. Sécurité & Mot de Passe
+* Mise à jour de votre mot de passe avec :
+  - Vérification obligatoire de l'**ancien mot de passe**.
+  - Longueur minimale de **6 caractères**.
+  - Obligation de choisir un mot de passe différent du mot de passe actuel.
+  - Confirmation identique pour éviter toute faute de frappe.
+
+### 3. Paramètres Entreprise *(Administrateurs & Superviseurs)*
+* **Nom de l'entreprise** : Personnalisation de l'identité de l'établissement.
+* **Seuil d'horaire de retard configurable (`late_after`)** : Définissez l'heure limite d'arrivée (ex: `08:30`, `09:00`) via le sélecteur horaire ou les boutons de raccourcis rapides (`08:00`, `08:15`, `08:30`, `08:45`, `09:00`, `09:30`). Tout pointage effectué après cette heure est automatiquement qualifié « En retard » dans le registre et le tableau de bord.
+
+---
+
+## 12. Foire Aux Questions (FAQ) & Bonnes Pratiques
 
 #### Le système fonctionne-t-il si la connexion réseau est coupée temporairement ?
 > **Oui**. Le moteur d'intelligence artificielle intègre une file d'attente hors-ligne SQLite (`HttpSink`). Tous les événements détectés pendant la coupure sont sauvegardés localement et resynchronisés dès le rétablissement du réseau.
@@ -159,3 +180,4 @@ Depuis la page **Présences** :
 
 #### Comment s'assurer d'une lecture optimale des plaques la nuit ?
 > Le système applique automatiquement un rehaussement adaptatif de contraste (CLAHE) pour corriger les reflets des projecteurs et l'éclairage infrarouge.
+

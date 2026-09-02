@@ -7,7 +7,8 @@ import uuid
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, User, Vehicle
+from .models import AccessLog, Alert, Attendance, AttendanceAudit, Camera, SystemSetting, User, Vehicle
+
 
 from .plates import canonical
 
@@ -48,7 +49,8 @@ class EventSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "username", "nom", "prenom", "photo", "role")
+        fields = ("id", "username", "email", "nom", "prenom", "photo", "role")
+
 
 
 class AttendanceAuditSerializer(serializers.ModelSerializer):

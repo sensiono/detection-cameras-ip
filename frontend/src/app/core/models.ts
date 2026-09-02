@@ -3,11 +3,13 @@ export type Role = 'admin' | 'supervisor' | 'member';
 export interface User {
   id: number;
   username: string;
+  email?: string;
   nom: string;
   prenom: string;
   photo: string | null;
   role: Role;
 }
+
 
 export interface AttendanceAudit {
   id: number;

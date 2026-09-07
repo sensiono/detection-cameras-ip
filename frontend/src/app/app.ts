@@ -1,12 +1,15 @@
-import { Component, HostListener, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 import { Api } from './core/api';
 import { Auth } from './core/auth';
 import { ConfirmService } from './core/confirm';
 import { I18nService, Lang } from './core/i18n';
 import { ModalService } from './core/modal';
+import { Alert } from './core/models';
 import { StreamService } from './core/stream';
 import { ThemeService } from './core/theme';
 import { ToastService } from './core/toast';
@@ -15,108 +18,221 @@ import { ToastService } from './core/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, DatePipe],
   template: `
     @if (auth.token()) {
-      <header class="app-header">
-        <div class="nav-container">
-          <div class="brand">
-            <div class="brand-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                <circle cx="12" cy="12" r="3" />
+      <div class="safewatch-shell">
+        <!-- SafeWatch Left Sidebar -->
+        <aside class="safewatch-sidebar">
+          <!-- Brand Header -->
+          <div class="sidebar-brand">
+            <div class="brand-shield-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L3 7V12C3 17.52 6.84 22.74 12 24C17.16 22.74 21 17.52 21 12V7L12 2Z" fill="#ffffff" />
+                <path d="M12 5.2L5.5 8.4V12C5.5 15.8 8.2 19.3 12 20.4C15.8 19.3 18.5 15.8 18.5 12V8.4L12 5.2Z" fill="#5046e5" />
+                <path d="M10 8.8H13C13.8 8.8 14.5 9.5 14.5 10.3C14.5 10.9 14.2 11.4 13.7 11.6C14.4 11.9 14.8 12.6 14.8 13.3C14.8 14.3 14 15 13 15H10V8.8ZM11.4 11.2H12.8C13.2 11.2 13.4 11 13.4 10.6C13.4 10.3 13.2 10.1 12.8 10.1H11.4V11.2ZM11.4 13.7H12.9C13.3 13.7 13.6 13.4 13.6 13C13.6 12.7 13.3 12.4 12.9 12.4H11.4V13.7Z" fill="#ffffff"/>
               </svg>
             </div>
-            <span class="brand-text">VISION<span class="brand-badge">AI</span></span>
+            <div class="brand-titles">
+              <h2 class="brand-name">SafeWatch</h2>
+              <span class="brand-tagline">Surveillance intelligente</span>
+            </div>
           </div>
 
-          <nav class="nav-links">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-              {{ i18n.t('nav.dashboard') }}
-            </a>
-            <a routerLink="/attendance" routerLinkActive="active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              {{ i18n.t('nav.attendance') }}
-            </a>
-            <a routerLink="/logs" routerLinkActive="active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-              {{ i18n.t('nav.logs') }}
-            </a>
-            <a routerLink="/vehicles" routerLinkActive="active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
-              {{ i18n.t('nav.vehicles') }}
-            </a>
-            <a routerLink="/members" routerLinkActive="active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8.38 8.38 0 0 1 13 0"/></svg>
-              {{ i18n.t('nav.members') }}
-            </a>
-            <a routerLink="/alerts" routerLinkActive="active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.8" fill="currentColor" stroke="none"/></svg>
-              {{ i18n.t('nav.alerts') }}
+          <!-- Navigation Links -->
+          <nav class="sidebar-nav">
+            <!-- 1. Tableau de bord -->
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.dashboard') }}</span>
+              <span class="active-indicator"></span>
             </a>
 
+            <!-- 2. Caméras -->
+            <a routerLink="/cameras" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.cameras') }}</span>
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 3. Enregistrements (Présences) -->
+            <a routerLink="/attendance" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.recordings') }}</span>
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 4. Événements (Logs) -->
+            <a routerLink="/logs" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.events') }}</span>
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 5. Alertes -->
+            <a routerLink="/alerts" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.8" fill="currentColor" stroke="none"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.alerts') }}</span>
+              @if (unreadAlertsCount() > 0) {
+                <span class="nav-item-badge">{{ unreadAlertsCount() }}</span>
+              }
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 6. Rapports (Vehicles/Reports) -->
+            <a routerLink="/vehicles" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.reports') }}</span>
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 7. Utilisateurs (Membres) -->
+            <a routerLink="/members" routerLinkActive="active" class="nav-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.users') }}</span>
+              <span class="active-indicator"></span>
+            </a>
+
+            <!-- 8. Paramètres -->
+            <button type="button" class="nav-item nav-btn-item" (click)="openSettingsModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span class="nav-item-label">{{ i18n.t('nav.settings') }}</span>
+            </button>
           </nav>
 
-          <span class="spacer"></span>
-
-          <div class="user-panel">
-            <!-- Language Selector -->
-            <div class="lang-selector" title="Changer la langue / Change language / تغيير اللغة">
-              <select [ngModel]="i18n.currentLang()" (ngModelChange)="onLangChange($event)">
-                <option value="fr">FR</option>
-                <option value="en">EN</option>
-                <option value="ar">العربية</option>
-              </select>
-            </div>
-
-            <div class="camera-status">
-              <span class="pulse-dot"></span>
-              <span class="cam-text">{{ activeCamerasCount() }} {{ i18n.t('nav.live_cams') }}</span>
-            </div>
-
-
-            <!-- Theme Toggle Button (Light/Dark) -->
-            <button class="theme-toggle-btn" (click)="theme.toggle()" [title]="theme.mode() === 'light' ? 'Mode sombre' : 'Mode clair'">
-              @if (theme.mode() === 'light') {
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-              } @else {
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-              }
-            </button>
-
-            @if (auth.user(); as u) {
-              <div class="user-badge clickable" (click)="openSettingsModal()" [title]="i18n.t('settings.title')">
-                <div class="avatar">{{ (u.username || 'U')[0].toUpperCase() }}</div>
-                <div class="user-meta">
-                  <span class="uname">{{ u.username }}</span>
-                  <span class="urole">{{ u.role }}</span>
-                </div>
-                <svg class="gear-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              </div>
-            } @else if (auth.token()) {
-              <div class="user-badge clickable" (click)="openSettingsModal()" [title]="i18n.t('settings.title')">
-                <div class="avatar">U</div>
-                <div class="user-meta">
-                  <span class="uname">Mon Profil</span>
-                  <span class="urole">Paramètres</span>
-                </div>
-                <svg class="gear-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              </div>
-            }
-
-
-            <button class="logout-btn" (click)="auth.logout()" [title]="i18n.t('nav.logout')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Sidebar Footer with Logout -->
+          <div class="sidebar-footer">
+            <button type="button" class="logout-action-btn" (click)="auth.logout()" [title]="i18n.t('nav.logout')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" y2="12"/>
               </svg>
+              <span>{{ i18n.t('nav.logout') }}</span>
             </button>
           </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <div class="safewatch-content-wrap">
+          <!-- Topbar -->
+          <header class="safewatch-topbar">
+            <div class="topbar-welcome">
+              <h1 class="topbar-title">{{ pageTitle() }}</h1>
+              <p class="topbar-subtitle">{{ pageSubtitle() }}</p>
+            </div>
+
+            <div class="topbar-controls">
+              <!-- Notifications Dropdown (List without images) -->
+              <div class="topbar-alert-wrapper">
+                <button type="button" class="topbar-icon-btn" (click)="toggleAlertsDropdown($event)" title="Alertes">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  @if (unreadAlertsCount() > 0) {
+                    <span class="notif-badge">{{ unreadAlertsCount() }}</span>
+                  }
+                </button>
+
+                @if (showAlertsDropdown()) {
+                  <div class="alerts-dropdown-menu" (click)="$event.stopPropagation()">
+                    <div class="alerts-dropdown-header">
+                      <div class="alerts-dd-title">
+                        <strong>{{ i18n.t('nav.alerts') || 'Alertes' }}</strong>
+                        @if (unreadAlertsCount() > 0) {
+                          <span class="badge-count">{{ unreadAlertsCount() }}</span>
+                        }
+                      </div>
+                      @if (unreadAlertsCount() > 0) {
+                        <button type="button" class="btn-mark-all" (click)="markAllAlertsSeen()">Tout marquer lu</button>
+                      }
+                    </div>
+
+                    <div class="alerts-dropdown-list">
+                      @for (alert of recentAlertsList(); track alert.id) {
+                        <div class="alert-dropdown-item" [class.unseen]="!alert.seen" (click)="onAlertItemClick(alert)">
+                          <div class="alert-dd-icon" [class.danger]="alert.kind === 'spoof_attempt' || alert.kind === 'refused_plate'">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                              <line x1="12" y1="9" x2="12" y2="13"/>
+                              <circle cx="12" cy="17" r="0.8" fill="currentColor"/>
+                            </svg>
+                          </div>
+                          <div class="alert-dd-body">
+                            <div class="alert-dd-msg">{{ alert.message }}</div>
+                            <div class="alert-dd-meta font-mono">
+                              <span>{{ alert.camera_id || 'Caméra' }}</span>
+                              <span>·</span>
+                              <span>{{ alert.created_at ? (alert.created_at | date:'HH:mm:ss') : 'Récemment' }}</span>
+                            </div>
+                          </div>
+                          @if (!alert.seen) {
+                            <span class="unread-dot"></span>
+                          }
+                        </div>
+                      }
+                      @empty {
+                        <div class="empty-alerts-text">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                          </svg>
+                          <p>{{ i18n.t('dash.no_alerts') || 'Aucune alerte enregistrée' }}</p>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="alerts-dropdown-footer">
+                      <button type="button" class="btn-all-alerts" (click)="goToAllAlerts()">
+                        <span>{{ i18n.t('dash.all_alerts') || 'Voir toutes les alertes' }}</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Theme Toggle Button (Light/Dark) -->
+              <button class="topbar-icon-btn" (click)="theme.toggle()" [title]="theme.mode() === 'light' ? 'Mode sombre' : 'Mode clair'">
+                @if (theme.mode() === 'light') {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                }
+              </button>
+
+              <!-- Language Selector -->
+              <div class="lang-selector-pill" title="Changer la langue / Change language / تغيير اللغة">
+                <select [ngModel]="i18n.currentLang()" (ngModelChange)="onLangChange($event)">
+                  <option value="fr">FR</option>
+                  <option value="en">EN</option>
+                  <option value="ar">العربية</option>
+                </select>
+              </div>
+
+              <!-- User Profile Badge -->
+              <div class="topbar-user-pill" (click)="openSettingsModal()" [title]="i18n.t('settings.title')">
+                <div class="user-avatar-circle">
+                  {{ (auth.user()?.username || 'A')[0].toUpperCase() }}
+                </div>
+                <div class="user-info-text">
+                  <span class="user-name-display">{{ auth.user()?.username || 'Admin' }}</span>
+                  <span class="user-role-display">{{ auth.user()?.role === 'admin' ? 'Superviseur' : (auth.user()?.role || 'Utilisateur') }}</span>
+                </div>
+                <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </header>
+
+          <!-- Main Page Body -->
+          <main class="safewatch-page-viewport">
+            <router-outlet />
+          </main>
         </div>
-      </header>
+      </div>
+    } @else {
+      <main class="auth-only-viewport">
+        <router-outlet />
+      </main>
     }
-    
-    <main class="app-main"><router-outlet /></main>
 
     <!-- Global Image Modal Popup -->
     @if (modal.activeModal(); as m) {
@@ -1052,6 +1168,7 @@ import { ToastService } from './core/toast';
 export class App implements OnInit, OnDestroy {
   private api = inject(Api);
   private stream = inject(StreamService);
+  private router = inject(Router);
   auth = inject(Auth);
   modal = inject(ModalService);
   confirmService = inject(ConfirmService);
@@ -1059,8 +1176,37 @@ export class App implements OnInit, OnDestroy {
   toast = inject(ToastService);
   i18n = inject(I18nService);
 
-  readonly activeCamerasCount = signal<number>(2);
+  readonly searchQuery = signal('');
+  readonly unreadAlertsCount = signal<number>(5);
+  readonly currentUrl = signal<string>(this.router.url);
+  readonly showAlertsDropdown = signal<boolean>(false);
+  readonly recentAlertsList = signal<Alert[]>([]);
+
+  readonly pageTitle = computed(() => {
+    const url = this.currentUrl();
+    if (url.startsWith('/cameras')) return this.i18n.t('nav.cameras') || 'Caméras';
+    if (url.startsWith('/attendance')) return this.i18n.t('nav.recordings') || 'Enregistrements';
+    if (url.startsWith('/logs')) return this.i18n.t('nav.events') || 'Événements';
+    if (url.startsWith('/alerts')) return this.i18n.t('nav.alerts') || 'Alertes';
+    if (url.startsWith('/vehicles')) return this.i18n.t('nav.reports') || 'Rapports';
+    if (url.startsWith('/members')) return this.i18n.t('nav.users') || 'Utilisateurs';
+    return this.i18n.t('nav.dashboard') || 'Tableau de bord';
+  });
+
+  readonly pageSubtitle = computed(() => {
+    const url = this.currentUrl();
+    if (url.startsWith('/cameras')) return "Surveillance et gestion des flux vidéo en direct";
+    if (url.startsWith('/attendance')) return "Registre d'émargement et pointages en temps réel";
+    if (url.startsWith('/logs')) return "Journal d'accès et passages de véhicules LAPI";
+    if (url.startsWith('/alerts')) return "Historique des alertes de sécurité et notifications";
+    if (url.startsWith('/vehicles')) return "Rapports des véhicules enregistrés et statistiques";
+    if (url.startsWith('/members')) return "Gestion des collaborateurs et autorisations";
+    return "Bienvenue, Admin ! Voici un aperçu de votre système.";
+  });
+
+  readonly activeCamerasCount = signal<number>(8);
   private sub: any = null;
+  private routerSub: any = null;
 
   readonly showSettingsModal = signal(false);
   readonly settingsTab = signal<'profile' | 'security' | 'company'>('profile');
@@ -1087,7 +1233,18 @@ export class App implements OnInit, OnDestroy {
       this.auth.loadUser().subscribe({
         error: () => {},
       });
+      this.api.stats().subscribe({
+        next: (s) => {
+          if (s?.alertes_non_vues != null) this.unreadAlertsCount.set(s.alertes_non_vues);
+        },
+        error: () => {},
+      });
     }
+    this.routerSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        this.currentUrl.set(e.urlAfterRedirects || e.url);
+      });
     this.sub = this.stream.updates$.subscribe(() => {
       this.refreshCameras();
     });
@@ -1095,6 +1252,21 @@ export class App implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.routerSub?.unsubscribe();
+  }
+
+  scrollToCameras(): void {
+    if (this.router.url !== '/' && !this.router.url.startsWith('/?')) {
+      this.router.navigate(['/'], { queryParams: { section: 'cameras' } }).then(() => {
+        setTimeout(() => {
+          const el = document.getElementById('cameras-grid');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      });
+    } else {
+      const el = document.getElementById('cameras-grid');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   refreshCameras(): void {
@@ -1240,10 +1412,62 @@ export class App implements OnInit, OnDestroy {
     this.toast.info(msg);
   }
 
+  toggleAlertsDropdown(e?: MouseEvent): void {
+    e?.stopPropagation();
+    const next = !this.showAlertsDropdown();
+    this.showAlertsDropdown.set(next);
+    if (next) {
+      this.loadAlertsDropdown();
+    }
+  }
+
+  loadAlertsDropdown(): void {
+    this.api.alerts().subscribe({
+      next: (res) => {
+        this.recentAlertsList.set((res.results || []).slice(0, 6));
+        const unread = (res.results || []).filter((a) => !a.seen).length;
+        this.unreadAlertsCount.set(unread);
+      },
+      error: () => {},
+    });
+  }
+
+  markAllAlertsSeen(): void {
+    this.api.markAllSeen().subscribe({
+      next: () => {
+        this.unreadAlertsCount.set(0);
+        this.recentAlertsList.update((list) => list.map((a) => ({ ...a, seen: true })));
+      },
+      error: () => {},
+    });
+  }
+
+  onAlertItemClick(alert: Alert): void {
+    if (!alert.seen && alert.id) {
+      this.api.markSeen(alert.id).subscribe({
+        next: () => {
+          alert.seen = true;
+          this.unreadAlertsCount.update((c) => Math.max(0, c - 1));
+        },
+      });
+    }
+  }
+
+  goToAllAlerts(): void {
+    this.showAlertsDropdown.set(false);
+    this.router.navigate(['/alerts']);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.showAlertsDropdown.set(false);
+  }
+
   @HostListener('window:keydown.escape')
   onEscape(): void {
     this.modal.close();
     this.showSettingsModal.set(false);
+    this.showAlertsDropdown.set(false);
   }
 }
 

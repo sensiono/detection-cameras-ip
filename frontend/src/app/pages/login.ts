@@ -27,13 +27,14 @@ import { I18nService, Lang } from '../core/i18n';
       <form (ngSubmit)="submit()" class="glass-card login-card">
         <div class="brand-header">
           <div class="logo-circle">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-              <circle cx="12" cy="12" r="3" />
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L3 7V12C3 17.52 6.84 22.74 12 24C17.16 22.74 21 17.52 21 12V7L12 2Z" fill="#ffffff" />
+              <path d="M12 5.2L5.5 8.4V12C5.5 15.8 8.2 19.3 12 20.4C15.8 19.3 18.5 15.8 18.5 12V8.4L12 5.2Z" fill="#5046e5" />
+              <path d="M10 8.8H13C13.8 8.8 14.5 9.5 14.5 10.3C14.5 10.9 14.2 11.4 13.7 11.6C14.4 11.9 14.8 12.6 14.8 13.3C14.8 14.3 14 15 13 15H10V8.8ZM11.4 11.2H12.8C13.2 11.2 13.4 11 13.4 10.6C13.4 10.3 13.2 10.1 12.8 10.1H11.4V11.2ZM11.4 13.7H12.9C13.3 13.7 13.6 13.4 13.6 13C13.6 12.7 13.3 12.4 12.9 12.4H11.4V13.7Z" fill="#ffffff"/>
             </svg>
           </div>
-          <h1>VISION AI</h1>
-          <p class="subtitle">{{ i18n.t('login.subtitle') }}</p>
+          <h1>SafeWatch</h1>
+          <p class="subtitle">{{ i18n.t('nav.tagline') || 'Surveillance intelligente' }}</p>
         </div>
 
         <div class="input-field">

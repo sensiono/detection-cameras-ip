@@ -20,8 +20,8 @@ export class Api {
     return params;
   }
 
-  stats(): Observable<Stats> {
-    return this.http.get<Stats>('/api/dashboard/');
+  stats(date?: string): Observable<Stats> {
+    return this.http.get<Stats>('/api/dashboard/', { params: this.params({ date }) });
   }
 
   attendance(filters?: Record<string, string | undefined>): Observable<Page<Attendance>> {

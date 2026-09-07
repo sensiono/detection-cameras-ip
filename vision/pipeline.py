@@ -227,6 +227,33 @@ def run_camera(camera: CameraCfg, recognizer: Recognizer, sink: EventSink, cfg: 
             )
         )
 
+    # Stream live camera frames to backend for direct view and dashboard cards
+    import time
+    import threading
+    import httpx
+    from urllib.parse import urlparse
+
+    # Extract backend base URL from sink config if available
+    backend_base = "http://localhost:8000"
+    if hasattr(cfg, "sink") and getattr(cfg.sink, "url", None):
+        parsed = urlparse(cfg.sink.url)
+        if parsed.scheme and parsed.netloc:
+            backend_base = f"{parsed.scheme}://{parsed.netloc}"
+
+    frame_url = f"{backend_base}/api/cameras/{camera.id}/frame/"
+    frame_client = httpx.Client(timeout=1.5)
+    last_frame_post = 0.0
+
+    def post_frame_async(jpeg_data: bytes):
+        try:
+            frame_client.post(
+                frame_url,
+                content=jpeg_data,
+                headers={"Content-Type": "image/jpeg"},
+            )
+        except Exception:
+            pass
+
     with RTSPStream(
         url=camera.url,
         camera_id=camera.id,
@@ -234,6 +261,22 @@ def run_camera(camera: CameraCfg, recognizer: Recognizer, sink: EventSink, cfg: 
         on_tamper=handle_tamper,
     ) as stream:
         for frame in stream.frames(stride=cfg.runtime.frame_stride):
+            # Send live frame ~10-15 times per second for smooth direct stream
+            now = time.time()
+            if now - last_frame_post >= 0.08:
+                last_frame_post = now
+                try:
+                    # Resize preview frame to max 720p for fast transmission
+                    h, w = frame.shape[:2]
+                    preview = frame
+                    if w > 1280:
+                        preview = cv2.resize(frame, (1280, int(h * 1280 / w)))
+                    ok, buf = cv2.imencode(".jpg", preview, [cv2.IMWRITE_JPEG_QUALITY, 75])
+                    if ok:
+                        threading.Thread(target=post_frame_async, args=(buf.tobytes(),), daemon=True).start()
+                except Exception:
+                    pass
+
             for kind, subject, confidence, bbox in recognizer(frame):
                 # Unknowns share one key, so a stranger loitering raises one alert.
                 if not confirmer.accept(f"{camera.id}:{kind}:{subject}"):
@@ -247,4 +290,5 @@ def run_camera(camera: CameraCfg, recognizer: Recognizer, sink: EventSink, cfg: 
                         snapshot=crop_b64(frame, bbox) if cfg.runtime.snapshots else None,
                     )
                 )
+
 

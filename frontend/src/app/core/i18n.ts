@@ -12,13 +12,20 @@ export interface Translations {
 
 export const DICT: Translations = {
   // Navigation
-  'nav.brand': { fr: 'VISION AI', en: 'VISION AI', ar: 'منصة الرؤية الذكية' },
+  'nav.brand': { fr: 'SafeWatch', en: 'SafeWatch', ar: 'سيف ووتش' },
+  'nav.brand_sub': { fr: 'Surveillance intelligente', en: 'Intelligent Surveillance', ar: 'مراقبة ذكية' },
   'nav.dashboard': { fr: 'Tableau de bord', en: 'Dashboard', ar: 'لوحة القيادة' },
+  'nav.cameras': { fr: 'Caméras', en: 'Cameras', ar: 'الكاميرات' },
   'nav.attendance': { fr: 'Présences', en: 'Attendance', ar: 'الحضور' },
+  'nav.recordings': { fr: 'Enregistrements', en: 'Recordings', ar: 'التسجيلات' },
   'nav.logs': { fr: 'Entrées / sorties', en: 'Gate Access', ar: 'حركة الدخول' },
+  'nav.events': { fr: 'Événements', en: 'Events', ar: 'الأحداث' },
   'nav.vehicles': { fr: 'Véhicules', en: 'Vehicles', ar: 'المركبات' },
   'nav.members': { fr: 'Collaborateurs', en: 'Collaborators', ar: 'الموظفون' },
+  'nav.users': { fr: 'Utilisateurs', en: 'Users', ar: 'المستخدمون' },
   'nav.alerts': { fr: 'Alertes', en: 'Alerts', ar: 'التنبيهات' },
+  'nav.reports': { fr: 'Rapports', en: 'Reports', ar: 'التقارير' },
+  'nav.settings': { fr: 'Paramètres', en: 'Settings', ar: 'الإعدادات' },
   'nav.logout': { fr: 'Déconnexion', en: 'Logout', ar: 'تسجيل الخروج' },
   'nav.live_cams': { fr: 'Caméras Actives', en: 'Active Cameras', ar: 'الكاميرات النشطة' },
   'nav.theme_toggle': { fr: 'Basculer le thème', en: 'Toggle theme', ar: 'تبديل المظهر' },
@@ -66,8 +73,39 @@ export const DICT: Translations = {
   'common.confirm': { fr: 'Confirmer', en: 'Confirm', ar: 'تأكيد' },
 
   // Dashboard Page
-  'dash.title': { fr: 'Supervision Globale', en: 'Global Overview', ar: 'المراقبة العامة' },
-  'dash.subtitle': { fr: 'Surveillance biométrique des accès et analyse des flux en temps réel', en: 'Biometric access surveillance & real-time traffic analysis', ar: 'مراقبة الدخول البيومترية وتحليل الحركات في الوقت الفعلي' },
+  'dash.title': { fr: 'Tableau de bord', en: 'Dashboard', ar: 'لوحة القيادة' },
+  'dash.subtitle': { fr: 'Bienvenue, Admin ! Voici un aperçu de votre système.', en: 'Welcome, Admin! Here is an overview of your system.', ar: 'مرحباً، المشرف! إليك نظرة عامة على نظامك.' },
+  'dash.active_cams': { fr: 'Caméras actives', en: 'Active cameras', ar: 'الكاميرات النشطة' },
+  'dash.all_online': { fr: 'Toutes en ligne', en: 'All online', ar: 'الكل متصل' },
+  'dash.recordings': { fr: 'Enregistrements', en: 'Recordings', ar: 'التسجيلات' },
+  'dash.recordings_card': { fr: 'Enregistrements', en: 'Recordings', ar: 'التسجيلات' },
+  'dash.today': { fr: "Aujourd'hui", en: 'Today', ar: 'اليوم' },
+  'dash.today_sub': { fr: "Aujourd'hui", en: 'Today', ar: 'اليوم' },
+  'dash.alerts': { fr: 'Alertes', en: 'Alerts', ar: 'التنبيهات' },
+  'dash.alerts_card': { fr: 'Alertes', en: 'Alerts', ar: 'التنبيهات' },
+  'dash.unread': { fr: 'non lues', en: 'unread', ar: 'غير مقروءة' },
+  'dash.unread_sub': { fr: 'Non lues', en: 'Unread', ar: 'غير مقروءة' },
+  'dash.users': { fr: 'Utilisateurs', en: 'Users', ar: 'المستخدمون' },
+  'dash.users_card': { fr: 'Utilisateurs', en: 'Users', ar: 'المستخدمون' },
+  'dash.active': { fr: 'Actifs', en: 'Active', ar: 'نشط' },
+  'dash.active_sub': { fr: 'Actifs', en: 'Active', ar: 'نشط' },
+  'dash.chart_activity': { fr: 'Activité des caméras', en: 'Camera activity', ar: 'نشاط الكاميرات' },
+  'dash.cam_activity': { fr: 'Activité des caméras', en: 'Camera activity', ar: 'نشاط الكاميرات' },
+  'dash.cams_online': { fr: 'Caméras en ligne', en: 'Cameras online', ar: 'الكاميرات المتصلة' },
+  'dash.cams_online_legend': { fr: 'Caméras en ligne', en: 'Cameras online', ar: 'الكاميرات المتصلة' },
+  'dash.chart_events': { fr: 'Répartition des événements', en: 'Event breakdown', ar: 'توزيع الأحداث' },
+  'dash.event_distribution': { fr: 'Répartition des événements', en: 'Event breakdown', ar: 'توزيع الأحداث' },
+  'dash.ev_motion': { fr: 'Détection de mouvement', en: 'Motion detection', ar: 'كشف الحركة' },
+  'dash.ev_intrusion': { fr: 'Intrusion', en: 'Intrusion', ar: 'اقتحام' },
+  'dash.ev_abandoned': { fr: 'Objet abandonné', en: 'Abandoned object', ar: 'جسم متروك' },
+  'dash.ev_other': { fr: 'Autres', en: 'Others', ar: 'أخرى' },
+  'dash.total_label': { fr: 'Total', en: 'Total', ar: 'المجموع' },
+  'dash.live_cameras': { fr: 'Caméras en direct', en: 'Live cameras', ar: 'الكاميرات المباشرة' },
+  'dash.live_cams_header': { fr: 'Caméras en direct', en: 'Live cameras', ar: 'الكاميرات المباشرة' },
+  'dash.all_alerts': { fr: 'Voir toutes les alertes', en: 'View all alerts', ar: 'عرض جميع التنبيهات' },
+  'dash.no_alerts': { fr: 'Aucune alerte enregistrée', en: 'No alerts recorded', ar: 'لا توجد تنبيهات مسجلة' },
+  'dash.edit_camera': { fr: 'Modifier', en: 'Update', ar: 'تعديل' },
+  'dash.delete_camera': { fr: 'Supprimer', en: 'Remove', ar: 'حذف' },
   'dash.present_today': { fr: 'Présents du jour', en: 'Present Today', ar: 'الحاضرون اليوم' },
   'dash.late_today': { fr: 'En retard', en: 'Late Arrivals', ar: 'المتأخرون' },
   'dash.absent_today': { fr: 'Absents estimés', en: 'Estimated Absentees', ar: 'الغيابات التقديرية' },
@@ -243,11 +281,11 @@ export class I18nService {
     this.applyDocumentDirection(lang);
   }
 
-  t(key: string): string {
+  t(key: string, fallback?: string): string {
     const lang = this.currentLang();
     const entry = DICT[key];
-    if (!entry) return key;
-    return entry[lang] || entry['fr'] || key;
+    if (!entry) return fallback || key;
+    return entry[lang] || entry['fr'] || fallback || key;
   }
 
   private applyDocumentDirection(lang: Lang): void {

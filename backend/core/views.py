@@ -78,6 +78,129 @@ def sse_stream(request):
 
 
 
+# In-memory real-time live frames buffer (cam_id -> (bytes, timestamp))
+_CAMERA_FRAMES: dict[str, bytes] = {}
+_CAMERA_FRAME_TIMES: dict[str, float] = {}
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def ingest_camera_frame(request, cam_id: str):
+    """Receives live video frames from vision workers/processes."""
+    import os
+    import time
+    global _CAMERA_FRAMES, _CAMERA_FRAME_TIMES
+    
+    # Can accept raw binary image or multipart or json { "frame": "base64..." }
+    frame_bytes = None
+    content_type = request.content_type or ""
+    if "image/" in content_type or "octet-stream" in content_type:
+        frame_bytes = request.body
+    elif request.data and "frame" in request.data:
+        import base64
+        try:
+            frame_bytes = base64.b64decode(request.data["frame"])
+        except Exception:
+            pass
+    elif request.FILES and "frame" in request.FILES:
+        frame_bytes = request.FILES["frame"].read()
+
+    if frame_bytes:
+        _CAMERA_FRAMES[cam_id] = frame_bytes
+        _CAMERA_FRAME_TIMES[cam_id] = time.time()
+        
+        # Persist latest frame to disk so all workers/sessions see the saved photo
+        try:
+            cameras_dir = os.path.join(settings.MEDIA_ROOT, "cameras")
+            os.makedirs(cameras_dir, exist_ok=True)
+            snapshot_path = os.path.join(cameras_dir, f"{cam_id}.jpg")
+            with open(snapshot_path, "wb") as f:
+                f.write(frame_bytes)
+        except Exception:
+            pass
+
+        return Response({"status": "ok"})
+    return Response({"detail": "No valid frame received"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def camera_snapshot(request, cam_id: str):
+    """Return the latest snapshot image for a camera as JPEG (from memory or saved file), or fallback."""
+    import os
+    import time
+
+    frame = _CAMERA_FRAMES.get(cam_id)
+    if not frame:
+        snapshot_path = os.path.join(settings.MEDIA_ROOT, "cameras", f"{cam_id}.jpg")
+        if os.path.isfile(snapshot_path):
+            try:
+                with open(snapshot_path, "rb") as f:
+                    frame = f.read()
+                    _CAMERA_FRAMES[cam_id] = frame
+            except Exception:
+                pass
+
+    if frame:
+        resp = HttpResponse(frame, content_type="image/jpeg")
+        resp["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        resp["Pragma"] = "no-cache"
+        resp["Expires"] = "0"
+        return resp
+
+    # Fallback to demo images if no real snapshot has ever been captured
+    fallback_static = os.path.join(settings.BASE_DIR, "media", "fallback.jpg")
+    if os.path.isfile(fallback_static):
+        with open(fallback_static, "rb") as f:
+            return HttpResponse(f.read(), content_type="image/jpeg")
+    return HttpResponse(status=404)
+
+
+def camera_stream(request, cam_id: str):
+    """MJPEG live video stream for a camera feed with multi-worker support."""
+    import os
+    import time
+
+    def mjpeg_generator():
+        snapshot_path = os.path.join(settings.MEDIA_ROOT, "cameras", f"{cam_id}.jpg")
+        last_mtime = 0.0
+        cached_frame = None
+
+        while True:
+            frame = _CAMERA_FRAMES.get(cam_id)
+            ts = _CAMERA_FRAME_TIMES.get(cam_id, 0)
+            now = time.time()
+
+            # If this gunicorn worker doesn't have frame in RAM, check shared disk snapshot
+            if not frame or (now - ts >= 3.0):
+                try:
+                    if os.path.isfile(snapshot_path):
+                        mtime = os.path.getmtime(snapshot_path)
+                        if mtime != last_mtime:
+                            with open(snapshot_path, "rb") as f:
+                                cached_frame = f.read()
+                            last_mtime = mtime
+                        if now - mtime < 15.0:
+                            frame = cached_frame
+                except Exception:
+                    pass
+
+            if frame:
+                yield (
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
+                )
+            time.sleep(0.04)  # ~25 FPS
+
+    response = StreamingHttpResponse(
+        mjpeg_generator(),
+        content_type="multipart/x-mixed-replace; boundary=frame"
+    )
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    response["X-Accel-Buffering"] = "no"
+    return response
+
+
 @api_view(["POST"])
 @permission_classes([IsCameraService])
 def events(request):
@@ -408,26 +531,39 @@ def attendance_report(request, fmt: str):
 @permission_classes([IsSupervisorOrAdmin])
 def dashboard(request):
     """The numbers the supervision screen shows, in one round trip."""
-    today = date.today()
+    date_param = request.query_params.get("date")
+    if date_param:
+        try:
+            target_date = datetime.strptime(str(date_param).strip(), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            target_date = date.today()
+    else:
+        target_date = date.today()
+
     members = User.objects.filter(role=User.Role.MEMBER).count()
-    present = Attendance.objects.filter(date=today).count()
-    access = AccessLog.objects.filter(date=today).aggregate(
+    present = Attendance.objects.filter(date=target_date).count()
+    access = AccessLog.objects.filter(date=target_date).aggregate(
         autorises=Count("id", filter=Q(statut=AccessLog.Status.AUTHORIZED)),
         refuses=Count("id", filter=Q(statut=AccessLog.Status.REFUSED)),
     )
     active_cameras = Camera.objects.filter(enabled=True).count()
+    total_cameras = Camera.objects.count()
+    alerts_day = Alert.objects.filter(created_at__date=target_date).count()
+
     return Response(
         {
-            "date": today,
+            "date": target_date,
             "membres": members,
             "presents": present,
             "absents": max(members - present, 0),
             "retards": Attendance.objects.filter(
-                date=today, statut=Attendance.Status.LATE
+                date=target_date, statut=Attendance.Status.LATE
             ).count(),
             **access,
             "alertes_non_vues": Alert.objects.filter(seen=False).count(),
+            "alertes_jour": alerts_day,
             "active_cameras": active_cameras,
+            "total_cameras": total_cameras,
         }
     )
 

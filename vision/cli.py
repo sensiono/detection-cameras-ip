@@ -17,6 +17,9 @@ log = logging.getLogger(__name__)
 
 app = typer.Typer(add_completion=False, help="AI service for cameras")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+# Suppress continuous HTTP request logs from httpx and httpcore
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 
 @app.command()

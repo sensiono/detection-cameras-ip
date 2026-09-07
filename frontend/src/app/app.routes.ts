@@ -20,7 +20,7 @@ export const routes: Routes = [
       { path: 'members', loadComponent: () => import('./pages/members').then((m) => m.MembersPage || m.Members) },
       { path: 'logs', loadComponent: () => import('./pages/logs').then((m) => m.LogsPage || m.Logs) },
       { path: 'alerts', loadComponent: () => import('./pages/alerts').then((m) => m.AlertsPage || m.Alerts) },
-
+      { path: 'cameras', loadComponent: () => import('./pages/cameras').then((m) => m.CamerasPage || m.Cameras) },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -36,11 +36,19 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "20kB"
+                  "maximumWarning": "25kB",
+                  "maximumError": "50kB"
                 }
 
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": false
+              },
               "outputHashing": "all"
             },
             "development": {

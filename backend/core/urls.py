@@ -15,6 +15,10 @@ router.register("logs", views.AccessLogViewSet, basename="logs")
 router.register("alerts", views.AlertViewSet)
 
 urlpatterns = [
+    path("cameras/<str:cam_id>/stream/", views.camera_stream, name="camera-stream"),
+    path("cameras/<str:cam_id>/snapshot/", views.camera_snapshot, name="camera-snapshot"),
+    path("cameras/<str:cam_id>/frame/", views.ingest_camera_frame, name="camera-frame"),
+
     path("events/pulse/", views.events_pulse, name="events-pulse"),
     path("events/stream/", views.sse_stream, name="sse-stream"),
     path("events/", views.events, name="events"),

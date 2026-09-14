@@ -1,0 +1,2698 @@
+[
+{
+  "model": "core.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$8yOEVYsuugpnBXYaWVyopN$S0FUSOg/yfhNpGAeorswmfgGv1oVYIpmcCLwn161TD4=",
+    "last_login": "2026-08-31T22:25:41.008Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "adminsof1@yopmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:45:45.451Z",
+    "nom": "Admin",
+    "prenom": "Super",
+    "photo": "",
+    "role": "admin",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 2,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ahmed_t",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:47:09.950Z",
+    "nom": "Trabelsi",
+    "prenom": "Ahmed",
+    "photo": "",
+    "role": "member",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 3,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sarra_b",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:47:09.961Z",
+    "nom": "Ben Ali",
+    "prenom": "Sarra",
+    "photo": "",
+    "role": "member",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 4,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "khalil_m",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:47:09.970Z",
+    "nom": "Mejri",
+    "prenom": "Khalil",
+    "photo": "",
+    "role": "member",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 5,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ai-service",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T23:19:35.437Z",
+    "nom": "Service",
+    "prenom": "IA",
+    "photo": "",
+    "role": "admin",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 6,
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sofien",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T23:40:30.556Z",
+    "nom": "Sofien",
+    "prenom": "",
+    "photo": "",
+    "role": "member",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "date": "2026-08-30",
+    "check_in": "08:15:00",
+    "check_out": "17:30:00",
+    "statut": "present",
+    "camera_id": "cam-entrance",
+    "confidence": 0.94,
+    "snapshot": "",
+    "audit_hash": ""
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "date": "2026-08-30",
+    "check_in": "08:45:00",
+    "check_out": null,
+    "statut": "late",
+    "camera_id": "cam-entrance",
+    "confidence": 0.91,
+    "snapshot": "",
+    "audit_hash": ""
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 3,
+  "fields": {
+    "user": 6,
+    "date": "2026-08-31",
+    "check_in": "00:38:37.523",
+    "check_out": "02:33:04.905",
+    "statut": "present",
+    "camera_id": "cam-entrance",
+    "confidence": 0.5605,
+    "snapshot": "attendance/a07c65ca7eb54e12aefa3c5a80a68e8a.jpg",
+    "audit_hash": ""
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "date": "2026-08-31",
+    "check_in": "23:45:20.025",
+    "check_out": null,
+    "statut": "late",
+    "camera_id": "cam-entrance",
+    "confidence": 0.98,
+    "snapshot": "",
+    "audit_hash": "f3739ccf2ace32ebee894df2530327eedb47d4cb65a314f7a962e270d3266755"
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 5,
+  "fields": {
+    "user": 6,
+    "date": "2026-09-02",
+    "check_in": "23:47:39.842",
+    "check_out": null,
+    "statut": "late",
+    "camera_id": "cam-entrance",
+    "confidence": 0.7601,
+    "snapshot": "attendance/f09245ec729e40d18ace27be647921b3.jpg",
+    "audit_hash": "45a9c710ec9fbcb5cfb2937f33f71409d74f87649a3f7c828916ae6c1e4e686f"
+  }
+},
+{
+  "model": "core.attendance",
+  "pk": 6,
+  "fields": {
+    "user": 6,
+    "date": "2026-09-07",
+    "check_in": "17:50:05.448",
+    "check_out": "23:57:17.445",
+    "statut": "late",
+    "camera_id": "cam-entrance",
+    "confidence": 0.7511,
+    "snapshot": "attendance/e5fc374f6b7b4b6387556c6c36824d0f.jpg",
+    "audit_hash": "ecbb316ecc0277534776c386a604406cd6115befe65e74bb3cef42d9591f426d"
+  }
+},
+{
+  "model": "core.vehicle",
+  "pk": 1,
+  "fields": {
+    "plaque": "159TN8950",
+    "proprietaire": "Ahmed Trabelsi",
+    "type": "car",
+    "autorise": true,
+    "user": 2
+  }
+},
+{
+  "model": "core.vehicle",
+  "pk": 2,
+  "fields": {
+    "plaque": "210TN3412",
+    "proprietaire": "Visiteur Inconnu",
+    "type": "car",
+    "autorise": false,
+    "user": null
+  }
+},
+{
+  "model": "core.vehicle",
+  "pk": 3,
+  "fields": {
+    "plaque": "97TN9900",
+    "proprietaire": "Sofien",
+    "type": "car",
+    "autorise": true,
+    "user": 6
+  }
+},
+{
+  "model": "core.vehicle",
+  "pk": 5,
+  "fields": {
+    "plaque": "97TN9990",
+    "proprietaire": "Autorisé depuis journal",
+    "type": "car",
+    "autorise": true,
+    "user": null
+  }
+},
+{
+  "model": "core.vehicle",
+  "pk": 6,
+  "fields": {
+    "plaque": "RS105990",
+    "proprietaire": "Autorisé depuis journal",
+    "type": "car",
+    "autorise": true,
+    "user": null
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 1,
+  "fields": {
+    "vehicle": 1,
+    "plaque": "159TN8950",
+    "date": "2026-08-30",
+    "heure": "08:10:00",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.96,
+    "snapshot": "",
+    "audit_hash": ""
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 2,
+  "fields": {
+    "vehicle": 2,
+    "plaque": "210TN3412",
+    "date": "2026-08-30",
+    "heure": "09:20:00",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.89,
+    "snapshot": "",
+    "audit_hash": ""
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 3,
+  "fields": {
+    "vehicle": null,
+    "plaque": "97TN9990",
+    "date": "2026-08-31",
+    "heure": "22:44:08.941",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.7332,
+    "snapshot": "access/9e068dfb40fa46c389e89c828c9fe92f.jpg",
+    "audit_hash": "cdf55c46eb1d6b3853471e0ca5b7c91a14e59c76d658076448e10492b01b21da"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 4,
+  "fields": {
+    "vehicle": 3,
+    "plaque": "97TN9900",
+    "date": "2026-08-31",
+    "heure": "22:44:10.572",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7424,
+    "snapshot": "access/403378ced60d4261b8a0b2e395390074.jpg",
+    "audit_hash": "0568f6c4a03ec4408c15e134b43189f79d9579259551cc752d4ac2bf34cc68fd"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 5,
+  "fields": {
+    "vehicle": 3,
+    "plaque": "97TN9900",
+    "date": "2026-08-31",
+    "heure": "22:45:41.747",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7661,
+    "snapshot": "access/04afdb6adb7f44c2ae4f43a5fcef3be8.jpg",
+    "audit_hash": "585a6bb7b9b7db6d8daa971d7685bd5634e99327d4b7d44eee76ca19b26a0ee4"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 6,
+  "fields": {
+    "vehicle": null,
+    "plaque": "97TN9990",
+    "date": "2026-08-31",
+    "heure": "22:45:42.690",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6872,
+    "snapshot": "access/29c8e73cbfd24d53870169a180a8edc4.jpg",
+    "audit_hash": "bc3c31a960c01b0023b78dfdc1785a6e286f2194e6d23545529edb7ad03cf895"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 7,
+  "fields": {
+    "vehicle": 3,
+    "plaque": "97TN9900",
+    "date": "2026-08-31",
+    "heure": "22:50:42.073",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7847,
+    "snapshot": "access/a11ee79396114de98d6aaa4c6067c647.jpg",
+    "audit_hash": "7823c2314ab08fe25daf2d7159bb01087587a61cb94e8d90c4bab668c2754d98"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 8,
+  "fields": {
+    "vehicle": 5,
+    "plaque": "97TN9990",
+    "date": "2026-08-31",
+    "heure": "22:50:43.346",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.6122,
+    "snapshot": "access/1b39b0b27440436c8686f0d6eb744b92.jpg",
+    "audit_hash": "9bb831e4980f7b3462712cadc5be235edfeff073f26d78802acb5c15cd0e95a6"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 9,
+  "fields": {
+    "vehicle": 3,
+    "plaque": "97TN9900",
+    "date": "2026-08-31",
+    "heure": "22:55:42.465",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7847,
+    "snapshot": "access/ce7fc0e0899b41f3be6d71f332d1a238.jpg",
+    "audit_hash": "c09ad77bda08722ceaebdbf935abafddb9e7de3e174044e163ef5abdb7412bbc"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 10,
+  "fields": {
+    "vehicle": 5,
+    "plaque": "97TN9990",
+    "date": "2026-08-31",
+    "heure": "22:55:43.753",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.6122,
+    "snapshot": "access/7c4e367ac2984ba6b45c5825d6e32d24.jpg",
+    "audit_hash": "446f80980f8e7137d21049fcaab1d29ee81c8936828761526cfd7b90f9d605b8"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 11,
+  "fields": {
+    "vehicle": 3,
+    "plaque": "97TN9900",
+    "date": "2026-08-31",
+    "heure": "23:00:42.732",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8149,
+    "snapshot": "access/15e9e8e52f704fbb8d8f257f86163d4b.jpg",
+    "audit_hash": "102622b9a20234ec7032715cb498a719779eddf233fc7c1b511a298b86268377"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 12,
+  "fields": {
+    "vehicle": 5,
+    "plaque": "97TN9990",
+    "date": "2026-08-31",
+    "heure": "23:00:44.971",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.599,
+    "snapshot": "access/c25b11da7ad84da38ecf906635d95a5f.jpg",
+    "audit_hash": "3e1741f679a561aab3e0ca36639921ca87b1338569731718ee8e19174546d634"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 13,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151T15990",
+    "date": "2026-08-31",
+    "heure": "23:04:14.188",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6961,
+    "snapshot": "access/23465a063005492e81587aab05dbd491.jpg",
+    "audit_hash": "8acb355098a3c03a0f627eb12a3819d6b12b8e411661d5e8493aa0be4faf786f"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 14,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151T05990",
+    "date": "2026-08-31",
+    "heure": "23:04:15.169",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6844,
+    "snapshot": "access/d8e8812b0a9140e89ef3fb115c83b245.jpg",
+    "audit_hash": "19f00bde9e0bcdc4974ceaf753bb315700edc35ccc9838f4cd370b32d8161d3c"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 15,
+  "fields": {
+    "vehicle": null,
+    "plaque": "851T15990",
+    "date": "2026-08-31",
+    "heure": "23:04:17.885",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6591,
+    "snapshot": "access/f7aff0f1fd7a469d972ea5bdd21effb9.jpg",
+    "audit_hash": "4a92b0366d9c0c590e64ad60e037684d98473fe1c53ac71e6056fd6713281a6c"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 16,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151TN5990",
+    "date": "2026-08-31",
+    "heure": "23:04:19.410",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6778,
+    "snapshot": "access/95b4ea1d3a1a4c8a8045adaac8d4e93c.jpg",
+    "audit_hash": "4aeb054c21bc15fc46fbc4d790d68ebc18ed7d09fb4b1b284bd9947dd3ce3ce0"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 17,
+  "fields": {
+    "vehicle": null,
+    "plaque": "155T05990",
+    "date": "2026-08-31",
+    "heure": "23:04:21.757",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6706,
+    "snapshot": "access/ae80f0d776ce4fc7b3bf770dd34f1b21.jpg",
+    "audit_hash": "dc274b53a903a29418ae87634b09aaf1d0882ac296c54bc01a33c4fafa871a68"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 18,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151T15990",
+    "date": "2026-08-31",
+    "heure": "23:09:14.687",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6647,
+    "snapshot": "access/e8d01c9f4b864e36b6eecde74ffcb2a6.jpg",
+    "audit_hash": "cfffd317e8a12b922f6a8853622d3edccbd7e392bb7d8811d60f361987034a28"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 19,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151T05990",
+    "date": "2026-08-31",
+    "heure": "23:09:17.316",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6781,
+    "snapshot": "access/9aa7b826c5fe494ca60e40b4f4f4807f.jpg",
+    "audit_hash": "b2842826cce18bedb06921fc4ea229412effd4a84e83684c1782d24f677f1651"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 20,
+  "fields": {
+    "vehicle": null,
+    "plaque": "851T15990",
+    "date": "2026-08-31",
+    "heure": "23:09:19.710",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6597,
+    "snapshot": "access/2a0c2ac50cbe4479ae9ed5e40ed55011.jpg",
+    "audit_hash": "ad5362643a95e167779defe01f11470a0e068a037fecee97199e5af83bb5436d"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 21,
+  "fields": {
+    "vehicle": null,
+    "plaque": "151TN5990",
+    "date": "2026-08-31",
+    "heure": "23:09:21.523",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6806,
+    "snapshot": "access/dd47b70171234f81a943eae90bcbbb1c.jpg",
+    "audit_hash": "5e43f7eda5e0abd946004b66dccdc0d5621b1254c692dc9567427b6d493f6508"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 22,
+  "fields": {
+    "vehicle": null,
+    "plaque": "155T05990",
+    "date": "2026-08-31",
+    "heure": "23:09:29.359",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.6638,
+    "snapshot": "access/449cda5bd77c48488118d289325ee7b9.jpg",
+    "audit_hash": "a805bbaf0fee85ba9b8845c31324eb6bdb5c7bde29231189d25d4756bcefb60a"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 23,
+  "fields": {
+    "vehicle": null,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:11:37.097",
+    "statut": "refuse",
+    "camera_id": "cam-gate",
+    "confidence": 0.7964,
+    "snapshot": "access/e10a2b3e57094ca2a9c3ecbf7e828a2a.jpg",
+    "audit_hash": "5e053301133514f84a97353e17735426718c1b2a00ac1551cad014ccfa8efdb0"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 24,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:16:37.489",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.758,
+    "snapshot": "access/1dd79429e07e4e1db537e3022bf91a79.jpg",
+    "audit_hash": "685b93bdb114bfd32a8ccdd57d14e5fec1b5b88d57203c3e55177d5a6a8cec33"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 25,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:21:37.827",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8172,
+    "snapshot": "access/9943f1410bac426a847992e4b669b321.jpg",
+    "audit_hash": "4a53d2aea60bc8a0ff2334b9f46cd6d3f132310c44a2b51a50b4cfa66ee2df0d"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 26,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:26:38.233",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8199,
+    "snapshot": "access/3bc825724e614dabb07a0dc1c849bf1b.jpg",
+    "audit_hash": "d49d232928fa40e88c802d80757b74204b07656bd1dc9f6c10c7a142be2f3e7f"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 27,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:31:38.594",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7584,
+    "snapshot": "access/3a2a319657e54d9088f97b03e9bf7fa0.jpg",
+    "audit_hash": "fbd4ca67b7a61f9207de797350d4906318618ef64d817994da2562f6c88fc63b"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 28,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:36:38.963",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.831,
+    "snapshot": "access/23ff08a17a4044cc941b1098d40334cd.jpg",
+    "audit_hash": "2f8801da45f5a8fdb1f25232d916504c290a3fc0123da873c33f3c0ccf8cd69d"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 29,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:41:39.359",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7589,
+    "snapshot": "access/6faf983f5798451ea1dc35c9d11a6838.jpg",
+    "audit_hash": "550dd9513dca0a26169ddfbaf5262e0e7e7380f38981131c58dce258de266523"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 30,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:45:20.025",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.99,
+    "snapshot": "",
+    "audit_hash": "667abbde2bebb3427c4528489be50ada6ed0b7d400e661fa7f33b5b8097f2134"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 31,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:46:39.739",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7584,
+    "snapshot": "access/4bb9c28c00104e70b6d88910738ecd12.jpg",
+    "audit_hash": "e3f9a60095403f94a430fbfea0813c1a1e90043fee97af8b1b8cbe6aee515a7e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 32,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:51:40.155",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.799,
+    "snapshot": "access/57bec77cf9064ae895bdee16c9a2c32d.jpg",
+    "audit_hash": "4b69259f6489a2f9fc143988b46aefcaf956d5dd8851dc64c139201362867c9e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 33,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-08-31",
+    "heure": "23:56:40.455",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7597,
+    "snapshot": "access/9517f062c9224fdb92c86f3330e2f103.jpg",
+    "audit_hash": "527c41dbc93a810f562630b7632078e60760020860ae105f53e6430ca874f258"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 34,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:01:40.835",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7856,
+    "snapshot": "access/c90ce8bf71d44d1bbdf5abea36117364.jpg",
+    "audit_hash": "766799cd2abc23b9a62ece1d373ec97371afc94e06f26503a389f4e7253d94e2"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 35,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:06:41.179",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8175,
+    "snapshot": "access/9130dec6d2314925a4529e29b46cbc60.jpg",
+    "audit_hash": "5fd086b7e6b3306ddd690bc31b8dfc33541eb0d5cd29322aee5eb74123e3d263"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 36,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:11:41.556",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8083,
+    "snapshot": "access/5ff6756e7bad4904875ad1aefab0a158.jpg",
+    "audit_hash": "4baaa6253aa6c9a727da99a9f954416f04098a182f085c49afc9badb5c24466b"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 37,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:16:41.901",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8155,
+    "snapshot": "access/8e7d361f3b1e47b69ea4c6741966cd48.jpg",
+    "audit_hash": "76d27c0622e51647cf471d4593bacca9452417fa7dcdc1d5a11632080efa77cc"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 38,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:21:42.260",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7478,
+    "snapshot": "access/75e0aed38fa741e0b929516d018427a4.jpg",
+    "audit_hash": "99746efa8430e928c6224cdd44a9a34e6b99e96306505a4d6ed68eb402f3cd77"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 39,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:26:42.651",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7525,
+    "snapshot": "access/42dbc3f5ce8b47ba86f973211743508b.jpg",
+    "audit_hash": "6f19817765440517287ccf731daf40258f51327316b0cd75d19375cf5f8629fb"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 40,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:31:42.985",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7844,
+    "snapshot": "access/a34564a5370f49b9bdc12545cff8eecf.jpg",
+    "audit_hash": "592988a7fdb3c05f89a5d9ae2147aa4857dccf1ac26c5b1fa39701fae3c23ea7"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 41,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:36:43.299",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.812,
+    "snapshot": "access/6794129cd71b47d6924a33586fe6e1fc.jpg",
+    "audit_hash": "c749dbe315ee109dd263b0eed52d314c4353c628f051769013744d50bfe62bee"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 42,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:41:43.649",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7719,
+    "snapshot": "access/d52a2bea9e18420ead2d2da15e0dee02.jpg",
+    "audit_hash": "fc06b2d052e1a509c5ac6dd6ff61a453d0852b4c1d7d023583dfbef00527c674"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 43,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-01",
+    "heure": "00:54:21.379",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8086,
+    "snapshot": "access/ef7bc36794504c109028d0049166f203.jpg",
+    "audit_hash": "a93f4a0f595a9de88b8026b7450ccb8ba493c9386548154da97a7be56e54f94c"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 44,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "22:36:08.369",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8173,
+    "snapshot": "access/a0d3108ce3864b4e9db475148812e85d.jpg",
+    "audit_hash": "7afca6afba3794f0bfc9424961712e27b5c096b2ceb9525eefedf51d9b10d0c2"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 45,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "22:41:08.692",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8188,
+    "snapshot": "access/e8786b506e054f59b40da0a77272a841.jpg",
+    "audit_hash": "3a2118dcd6d4d10ddd81843e75b218da10ea05ee5524f365b9c23e3da5266158"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 46,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "22:46:09.074",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7963,
+    "snapshot": "access/81e5da190ed2447e909eb43ebf435096.jpg",
+    "audit_hash": "e2e456cce808be5d822b3db79f52a1f0ebd79019391442303422901bf8cb8c1a"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 47,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "22:51:09.367",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8144,
+    "snapshot": "access/79969be546fe44b7a48b6aad086b0178.jpg",
+    "audit_hash": "fe51e47eb8286b6ac728c1534326eab97b4edb7990368ac980bdb2fee59a6436"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 48,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "22:56:09.660",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8102,
+    "snapshot": "access/9d99c9d8769643fcb760c8df10221005.jpg",
+    "audit_hash": "299d887d085a8a5e8fa746944a2d64966630dc9b67b81348d2b8190e9e217e08"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 49,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:28:11.421",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7721,
+    "snapshot": "access/e326e119a4854aa88e1ad2ac23188ce5.jpg",
+    "audit_hash": "8e5467b829dcb88c74b22f2a13443059c67958f2e60ee5a01b50ca7854480ac1"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 50,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:29:20.234",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.797,
+    "snapshot": "access/c97ee48f41a54d89a30256cc0461e383.jpg",
+    "audit_hash": "86f17705a4b2b1fdd176c341e30b8f3b813660482d4697e5c4cf4a7f13884974"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 51,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:34:20.602",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7887,
+    "snapshot": "access/9a7c98ab12b445b0a2e6386255423e69.jpg",
+    "audit_hash": "f58c079f315c39f04bfc1ee4ce354687ee28ef45654733e7338a65ff8db84a82"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 52,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:39:20.938",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7812,
+    "snapshot": "access/7205996cf92a45c1b339274ab25b5371.jpg",
+    "audit_hash": "8900dc3f94aaa1c6b47b14af03256c9fbd74d28812c646d2c7f00fd51a976680"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 53,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:44:21.226",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8223,
+    "snapshot": "access/28760ae44a4242fa84280b7245b2abfc.jpg",
+    "audit_hash": "045fab3d2eeaf0d84f7efff404ee03a2b75474009e3d8fc7d5b913ceec74ce0a"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 54,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:49:21.614",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7866,
+    "snapshot": "access/cc0bb42ae7de49f2b6561d7ad43e3dae.jpg",
+    "audit_hash": "5ed236b4ebff02c94266868cab87c297264e484ddb2e4b59f37598ecbb3b52f6"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 55,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:54:21.888",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7856,
+    "snapshot": "access/ec490458fa084109bf133395a02ce453.jpg",
+    "audit_hash": "6635c06eddd2d026e37f16fd163ba99f504fd610fe551b6a135d81da9623946c"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 56,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-02",
+    "heure": "23:59:22.292",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7812,
+    "snapshot": "access/04b17ced20f1458fba90d5f6ee7d9f06.jpg",
+    "audit_hash": "4dc973cffb5294bc2153035913182da85b4f4f9e811a02cb5523206ef1a695f8"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 57,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:04:22.614",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8198,
+    "snapshot": "access/c2bec4a3a93541b8bb8b51bbde96f035.jpg",
+    "audit_hash": "b248f154cbab9bb0c92ff3803fb688552cab27dbaf1a03bb8954ef8bfea6382b"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 58,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:09:22.917",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7695,
+    "snapshot": "access/c0c8f49c6a304e5db2a4d8afd580722c.jpg",
+    "audit_hash": "cfb5a146231a33a2223c0eaa248e64777bbca0f8eea440a92e4ca663411e1fdc"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 59,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:14:23.274",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7708,
+    "snapshot": "access/6e968b46857f4c02aff2430e8f78dc59.jpg",
+    "audit_hash": "abe26627959395e0ed9003ddf493cacde76756aaad9b8d4d4cec6a941281adf0"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 60,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:19:23.592",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.774,
+    "snapshot": "access/53635aff7f0c46269d60641ba19b320c.jpg",
+    "audit_hash": "5444cd4bee4e85e33cc3e2c1a138eeb856d4391b681bdde270133c5cecf1e910"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 61,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:24:23.938",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7474,
+    "snapshot": "access/421d316b589746c9a648085366d7919b.jpg",
+    "audit_hash": "128011c4d3b27b282896ab39481ffc8a154381b3f85d888f7e6ac23d8d7165a1"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 62,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-03",
+    "heure": "00:40:03.918",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8399,
+    "snapshot": "access/b10e2e269494410b8916b01e77227fea.jpg",
+    "audit_hash": "4334050a1d926581b55788855f718598844dd1cc8f1c09405304002e4fbe5a1e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 63,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "15:35:32.578",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7686,
+    "snapshot": "access/fb24e3d28d2444459e33d4c2af400cea.jpg",
+    "audit_hash": "8dd0e343efabd4fca905c034bc6b8bffc7cd253b8c97eb0942cb1dd229ed2b9e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 64,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "15:40:32.940",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7564,
+    "snapshot": "access/86b9fd1a9d64427aa645712aa8d08caa.jpg",
+    "audit_hash": "dc35404d18d7b21e37e69a208906af95921b355c51f88a958f3c7e6556221d5e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 65,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "15:45:33.271",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7416,
+    "snapshot": "access/20bb2e1eab2f4305b92e725b920bb361.jpg",
+    "audit_hash": "751884a72cab2189405da620a892ed806be788c33f6093b6f17b23415e3fe76e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 66,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "15:50:33.621",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7286,
+    "snapshot": "access/bb15b091ed4b48deacce4e8569475180.jpg",
+    "audit_hash": "f18efda1f1c2a76139250f8cf21aebb0104695c5bf3795ea9c0296f7e6d7771e"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 67,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "15:55:33.980",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7466,
+    "snapshot": "access/66e00c5e8317471b96da90dce37951b8.jpg",
+    "audit_hash": "5016397cff4b7e0842a1496dfef2f7b25ceeeca8b40dd07014dfab567d99bd10"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 68,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:00:34.311",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7886,
+    "snapshot": "access/abf871a60f8d4421857de8e02ae5ab06.jpg",
+    "audit_hash": "b43a630dde0f632aa40deef38e3c51bb00439e7a085520d2e5a3ac896957aaff"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 69,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:05:34.559",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8136,
+    "snapshot": "access/c2da774286c24e61a4e78ddd10786632.jpg",
+    "audit_hash": "314b6b957cd02682d647b2b2122c7b02cdb2ecced246bac705127fa4131c03c2"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 70,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:10:34.886",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7765,
+    "snapshot": "access/232901789715456e84cd05ec7d3b4695.jpg",
+    "audit_hash": "b39a853f24f6c656ee033de8ac0217711ee6c471c92110dfdc4d20c8a63693ff"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 71,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:15:35.198",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7389,
+    "snapshot": "access/3c70ed2b9624481fafcd45e45f6e5ae4.jpg",
+    "audit_hash": "d888b82763f61bd18390380858febdc349485bd7570c5906ec12841d83f29856"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 72,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:20:35.529",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8139,
+    "snapshot": "access/6f9eb6bef42f4d7e94e5ae6966bab5c1.jpg",
+    "audit_hash": "c29fa63a2001b0f5d349ed83fb7100936dfe710023d864e13be72db914983966"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 73,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:25:35.919",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7533,
+    "snapshot": "access/9e9f3b4f10484c89bd902e0a83a5a34b.jpg",
+    "audit_hash": "4a4c4ffe665083d46ec9cc8d710e573f7dd4f7d264bb081b68f22136680dcd40"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 74,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:30:36.262",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7639,
+    "snapshot": "access/ac5be47a80874bc6b15a94637238d8f7.jpg",
+    "audit_hash": "1d3765d77be768f4a31720a16a0bc15eddbfbe414c71f1364eb936c9927a1f73"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 75,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:35:36.577",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7466,
+    "snapshot": "access/60ec82c3519444a58a0e0a319853b6cc.jpg",
+    "audit_hash": "580159d0857194077bc3c6b038015e91ef308df872fbcef7b5c1d35376d06676"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 76,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "16:54:28.357",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7336,
+    "snapshot": "access/c1e4f7e0b2464670a673ea41439e66ef.jpg",
+    "audit_hash": "a04dfbee1c2c13fc11e874bf80eebfe8fee07a46bf3cfdd803769b5123dce30a"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 77,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:16:37.072",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7766,
+    "snapshot": "access/0cb40571773c47a1bf64529d40ed7590.jpg",
+    "audit_hash": "a39f23efcbd5e4e1919c05ad395ab938477890cd88a609bbf3c177a2415a3bb3"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 78,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:21:37.464",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7426,
+    "snapshot": "access/045db1dfd6cd48d4803d2589f17b81af.jpg",
+    "audit_hash": "8161874a69a76412cf190aa158e72d4066b37fcc46998441099de03a1ab7b4d9"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 79,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:26:37.744",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7566,
+    "snapshot": "access/521e85abecd748338ee9d16bd6260aaf.jpg",
+    "audit_hash": "d35077e95596430c26a135528bb6771dc2c5bdfedc80b58f6f3f191ef29d92c7"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 80,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:31:38.017",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8302,
+    "snapshot": "access/ebbc5ab62e8b4427b028906853341f2e.jpg",
+    "audit_hash": "e772da1b2395d771be1d02599334db8c14bdf22eb031fcbf10c4d20d610559da"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 81,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:36:38.395",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7794,
+    "snapshot": "access/9b5ff07f7fa1416b8e7d628185acbbda.jpg",
+    "audit_hash": "9239423eb16a82531f54ad242ca5328ebcfae33ce2d4c88693d962afdaa789ba"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 82,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:41:38.749",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.8276,
+    "snapshot": "access/c8e537393e78414786d8159ec8501e72.jpg",
+    "audit_hash": "a87e87d1758b1d4e160e2c13cc83d40211d247fbe55b02e911d85c11eab9d762"
+  }
+},
+{
+  "model": "core.accesslog",
+  "pk": 83,
+  "fields": {
+    "vehicle": 6,
+    "plaque": "RS105990",
+    "date": "2026-09-06",
+    "heure": "18:46:39.100",
+    "statut": "autorise",
+    "camera_id": "cam-gate",
+    "confidence": 0.7703,
+    "snapshot": "access/3fbc336cf1ba40f9b40d028e435215c5.jpg",
+    "audit_hash": "8dd3598738049f6d83fb5d21c33a9b89b163535c476b252628505ef480d0795e"
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 1,
+  "fields": {
+    "kind": "access_refused",
+    "message": "Véhicule non autorisé détecté au portail : 210TN3412",
+    "camera_id": "",
+    "snapshot": "",
+    "created_at": "2026-08-30T01:47:10.048Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 2,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu à la caméra entrée (cam-entrance)",
+    "camera_id": "",
+    "snapshot": "",
+    "created_at": "2026-08-30T01:47:10.058Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 3,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/0c4152f6a97a4d69807e1c61668621c3.jpg",
+    "created_at": "2026-08-30T23:38:37.227Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 4,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/9b98e4bee01142eebcf45d44c6299d51.jpg",
+    "created_at": "2026-08-30T23:42:12.750Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 5,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/1c00951e375b4127b2854e9b353484af.jpg",
+    "created_at": "2026-08-30T23:53:50.190Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 6,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/f40198ae0eb94a58b8c2ab18b90b4557.jpg",
+    "created_at": "2026-08-30T23:56:25.160Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 7,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/88c2ff8351da4037bb3c07128f4e08ff.jpg",
+    "created_at": "2026-08-31T00:00:06.794Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 8,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/2fd4a3dd9b8545da90e9a7f935f13b2b.jpg",
+    "created_at": "2026-08-31T00:07:30.144Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 9,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/eac0a60db65e4525ad02030b294e6c04.jpg",
+    "created_at": "2026-08-31T00:14:05.973Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 10,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/5cbf2e4f24d740ed944b8602bd33ff86.jpg",
+    "created_at": "2026-08-31T00:34:11.137Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 11,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/fff50f9241dc47d2b65e3370e80c469a.jpg",
+    "created_at": "2026-08-31T00:53:55.510Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 12,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/9ca9c2fafbb64c619602945d967c32d5.jpg",
+    "created_at": "2026-08-31T00:56:12.733Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 13,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/e22d9ef7b8e84968b35b62b9af2ea7e6.jpg",
+    "created_at": "2026-08-31T01:01:24.692Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 14,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/d845e106231345749da6f2c6d171b45a.jpg",
+    "created_at": "2026-08-31T01:06:29.203Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 15,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/e6c9024da76442dea2aafdb67443638d.jpg",
+    "created_at": "2026-08-31T01:06:43.871Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 16,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/71770d4a51f54eeb8ca7ae69f78bbc92.jpg",
+    "created_at": "2026-08-31T01:32:56.385Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 17,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/11f9e0b70ba2470bbacfe91f88c5edf6.jpg",
+    "created_at": "2026-08-31T01:33:56.538Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 18,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/dca7eb3023ea4cbf9a13dafd7fb87f94.jpg",
+    "created_at": "2026-08-31T01:34:56.829Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 19,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/d979fb1665b24b1696d125742a6f4d27.jpg",
+    "created_at": "2026-08-31T01:35:57.133Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 20,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/fd97ad0ed6a34c6099ce5b8231c78150.jpg",
+    "created_at": "2026-08-31T01:36:57.403Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 21,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/3ff261c7f6b04a348432ef6ad298c7cb.jpg",
+    "created_at": "2026-08-31T01:37:57.694Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 22,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/cc7857a1f7c24052b1015567f58bab2e.jpg",
+    "created_at": "2026-08-31T01:38:57.981Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 23,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/c45f4e57823c403495b236b321638990.jpg",
+    "created_at": "2026-08-31T01:39:58.261Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 24,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (21s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-08-31T21:42:32.091Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 25,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (16s d'interruption)",
+    "camera_id": "cam-entrance",
+    "snapshot": "",
+    "created_at": "2026-08-31T21:42:32.160Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 26,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (30s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-08-31T21:43:06.524Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 27,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 97TN9990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/9e068dfb40fa46c389e89c828c9fe92f.jpg",
+    "created_at": "2026-08-31T21:44:09.004Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 28,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 97TN9990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/29c8e73cbfd24d53870169a180a8edc4.jpg",
+    "created_at": "2026-08-31T21:45:42.723Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 29,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151T15990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/23465a063005492e81587aab05dbd491.jpg",
+    "created_at": "2026-08-31T22:04:14.238Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 30,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151T05990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/d8e8812b0a9140e89ef3fb115c83b245.jpg",
+    "created_at": "2026-08-31T22:04:15.201Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 31,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 851T15990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/f7aff0f1fd7a469d972ea5bdd21effb9.jpg",
+    "created_at": "2026-08-31T22:04:17.936Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 32,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151TN5990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/95b4ea1d3a1a4c8a8045adaac8d4e93c.jpg",
+    "created_at": "2026-08-31T22:04:19.451Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 33,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 155T05990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/ae80f0d776ce4fc7b3bf770dd34f1b21.jpg",
+    "created_at": "2026-08-31T22:04:21.787Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 34,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151T15990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/e8d01c9f4b864e36b6eecde74ffcb2a6.jpg",
+    "created_at": "2026-08-31T22:09:14.720Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 35,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151T05990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/9aa7b826c5fe494ca60e40b4f4f4807f.jpg",
+    "created_at": "2026-08-31T22:09:17.347Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 36,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 851T15990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/2a0c2ac50cbe4479ae9ed5e40ed55011.jpg",
+    "created_at": "2026-08-31T22:09:19.744Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 37,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 151TN5990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/dd47b70171234f81a943eae90bcbbb1c.jpg",
+    "created_at": "2026-08-31T22:09:21.572Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 38,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque 155T05990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/449cda5bd77c48488118d289325ee7b9.jpg",
+    "created_at": "2026-08-31T22:09:29.406Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 39,
+  "fields": {
+    "kind": "refused_plate",
+    "message": "Plaque RS105990 non enregistrée",
+    "camera_id": "cam-gate",
+    "snapshot": "alerts/e10a2b3e57094ca2a9c3ecbf7e828a2a.jpg",
+    "created_at": "2026-08-31T22:11:37.131Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 40,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (15s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-08-31T22:41:49.710Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 41,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (14s d'interruption)",
+    "camera_id": "cam-entrance",
+    "snapshot": "",
+    "created_at": "2026-08-31T22:42:19.783Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 42,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "unknown",
+    "camera_id": "cam-entrance",
+    "snapshot": "",
+    "created_at": "2026-08-31T22:45:20.591Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 43,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (21s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-09-02T22:29:17.238Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 44,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (21s d'interruption)",
+    "camera_id": "cam-entrance",
+    "snapshot": "",
+    "created_at": "2026-09-02T22:29:17.313Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 45,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (30s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-09-02T22:29:17.375Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 46,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/d18af7fa2608439c97997de230223c91.jpg",
+    "created_at": "2026-09-02T22:30:32.477Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 47,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/53319d06b26244148954d1f517d9168f.jpg",
+    "created_at": "2026-09-02T22:31:32.554Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 48,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/aff20da24b2a44beae7066d4c2744b56.jpg",
+    "created_at": "2026-09-02T22:32:32.592Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 49,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/3cad970285c847eaa83a6c10508168cd.jpg",
+    "created_at": "2026-09-02T22:33:32.638Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 50,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/385dfb0696a5480abd845efb6d3a5aa7.jpg",
+    "created_at": "2026-09-02T22:34:32.700Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 51,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/ad791d60811a499fa62ce95c49ccdfab.jpg",
+    "created_at": "2026-09-02T22:35:32.747Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 52,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/7e736de6635540e28bd38e8b3e38b511.jpg",
+    "created_at": "2026-09-02T22:36:32.810Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 53,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/e5f03592c3c141b6b0681305d1dc44f8.jpg",
+    "created_at": "2026-09-02T22:37:32.865Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 54,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/dbad407da7e54e6fbeba4e2ee5259fd5.jpg",
+    "created_at": "2026-09-02T22:38:32.923Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 55,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/bec36611e3264195a87eca33fdfc09df.jpg",
+    "created_at": "2026-09-02T22:39:32.968Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 56,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/1527ad966274476fad0ba5808bb68dbc.jpg",
+    "created_at": "2026-09-02T22:40:33.011Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 57,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/212f676b9b2349bd889ff2b9a61db8cf.jpg",
+    "created_at": "2026-09-02T22:41:33.064Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 58,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/490eefcc689b4a64af4939d0c7e4d8f2.jpg",
+    "created_at": "2026-09-02T22:42:33.106Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 59,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/8d42ee0d449846109b3aa6dc698a1566.jpg",
+    "created_at": "2026-09-02T22:43:33.162Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 60,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/5df980d94550466fb668d034814dfb9a.jpg",
+    "created_at": "2026-09-02T22:44:33.199Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 61,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/21160ad198a74b4698c9671fb7ed503d.jpg",
+    "created_at": "2026-09-02T22:45:33.249Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 62,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/8e7be47ece864ad380d157e8e2325997.jpg",
+    "created_at": "2026-09-02T22:46:33.316Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 63,
+  "fields": {
+    "kind": "tamper_attempt",
+    "message": "Sabotage caméra: Lentille masquée ou obscurcie (noir complet)",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/d00287be92464940ad5b9548572a7196.jpg",
+    "created_at": "2026-09-02T22:47:33.380Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 64,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/36b83f45ec3f4278afc17639a2cf8b9a.jpg",
+    "created_at": "2026-09-02T22:47:45.786Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 65,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/3e55034e03544e7c98d3524aadfa298f.jpg",
+    "created_at": "2026-09-02T22:48:26.478Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 66,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (15s d'interruption)",
+    "camera_id": "cam-gate",
+    "snapshot": "",
+    "created_at": "2026-09-07T16:49:39.760Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 67,
+  "fields": {
+    "kind": "signal_loss",
+    "message": "Perte de signal vidéo RTSP (16s d'interruption)",
+    "camera_id": "cam-entrance",
+    "snapshot": "",
+    "created_at": "2026-09-07T16:49:39.803Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 68,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/73be3b4cf6a04eca83a4d62d2911ac9e.jpg",
+    "created_at": "2026-09-07T16:50:05.938Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 69,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/73058f9c20b14cdaab29ed1e92be7fbb.jpg",
+    "created_at": "2026-09-07T16:56:03.431Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 70,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/e8f39e87862846b7ab8cc8ee7221e92a.jpg",
+    "created_at": "2026-09-07T17:01:03.802Z",
+    "seen": true
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 71,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/ad6ae25b1a7c4cceaade0d63bf788f85.jpg",
+    "created_at": "2026-09-07T22:18:59.404Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 72,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/312141c0c4f84fc1b126b5d8e430c138.jpg",
+    "created_at": "2026-09-07T22:21:47.986Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 73,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/957d5cab4a55496e9372b2d1c62635be.jpg",
+    "created_at": "2026-09-07T22:24:19.933Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 74,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/93a3908e39e74821b361f2b7f4ec5527.jpg",
+    "created_at": "2026-09-07T22:25:46.066Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 75,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/6297c419bedc4267b738d8911d3526a7.jpg",
+    "created_at": "2026-09-07T22:28:13.446Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 76,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/26dcbbcf757b4b619cdf5e3be8bd1b1f.jpg",
+    "created_at": "2026-09-07T22:35:03.062Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 77,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/1d5c4819f0c84b11a2fa4e41a59d4a36.jpg",
+    "created_at": "2026-09-07T22:40:22.450Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 78,
+  "fields": {
+    "kind": "unknown_face",
+    "message": "Visage non reconnu",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/13672ae0a5aa4964b5ccfc8416f37623.jpg",
+    "created_at": "2026-09-07T22:46:35.540Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.alert",
+  "pk": 79,
+  "fields": {
+    "kind": "spoof_attempt",
+    "message": "Visage présenté sur photo ou écran",
+    "camera_id": "cam-entrance",
+    "snapshot": "alerts/d317393763884c1cbabf97bc78a96550.jpg",
+    "created_at": "2026-09-07T22:46:35.926Z",
+    "seen": false
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 1,
+  "fields": {
+    "attendance": 3,
+    "user": 6,
+    "date": "2026-08-31",
+    "heure": "02:33:04.905",
+    "timestamp": "2026-08-31T01:33:04.954Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.774,
+    "snapshot": "attendance_audits/f87092627f124c2ab85fdf5061bbb8de.jpg",
+    "audit_hash": "fcd0c666fb3fcb99a0e5fb0c071e7d8ff0d5f72bb8c6da44e8bcbce648969524"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 2,
+  "fields": {
+    "attendance": 4,
+    "user": 1,
+    "date": "2026-08-31",
+    "heure": "23:45:20.025",
+    "timestamp": "2026-08-31T22:45:20.558Z",
+    "event_type": "check_in",
+    "camera_id": "cam-entrance",
+    "confidence": 0.98,
+    "snapshot": "",
+    "audit_hash": "004a5bd1c7b3c0afac1b1ee8643ef121ce11d6cb02c0a1e791760a88e70ad888"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 3,
+  "fields": {
+    "attendance": 5,
+    "user": 6,
+    "date": "2026-09-02",
+    "heure": "23:47:39.842",
+    "timestamp": "2026-09-02T22:47:39.883Z",
+    "event_type": "check_in",
+    "camera_id": "cam-entrance",
+    "confidence": 0.7601,
+    "snapshot": "attendance_audits/f09245ec729e40d18ace27be647921b3.jpg",
+    "audit_hash": "6f32ffa9f38bd46d82be38d95562752b9321d479dab9c21c58cd272a699ee821"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 4,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "17:50:05.448",
+    "timestamp": "2026-09-07T16:50:05.518Z",
+    "event_type": "check_in",
+    "camera_id": "cam-entrance",
+    "confidence": 0.7511,
+    "snapshot": "attendance_audits/e5fc374f6b7b4b6387556c6c36824d0f.jpg",
+    "audit_hash": "848b7a26677f519d2b82c4c74724a9daeb3ff6681083c713f830df17275968b2"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 5,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "18:01:05.779",
+    "timestamp": "2026-09-07T17:01:05.847Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.4436,
+    "snapshot": "attendance_audits/0fe89080583f4dfbb905b737f2821eb1.jpg",
+    "audit_hash": "329f5a903b457c2aa67aeb2c59531ca796c221553d5bedde293c37e9bf08311e"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 6,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:17:19.687",
+    "timestamp": "2026-09-07T22:17:19.778Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.5934,
+    "snapshot": "attendance_audits/d0643e4970f2418cbbb0df4344af3abc.jpg",
+    "audit_hash": "5ddf0d6f310b77c9f7e5a6f007b9e1c2935a0cb8b17aa7f32840d299cb92d738"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 7,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:22:21.859",
+    "timestamp": "2026-09-07T22:22:21.913Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.4691,
+    "snapshot": "attendance_audits/f133aa13fa4f4822bddf041455d64cd8.jpg",
+    "audit_hash": "f09191601a44b49dbb5a1b36b09341c338ceea45d0867bb541d7970195cbe30c"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 8,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:25:46.257",
+    "timestamp": "2026-09-07T22:25:46.316Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.6655,
+    "snapshot": "attendance_audits/31082b7d9f9e4a0cabda7417822517d7.jpg",
+    "audit_hash": "da65906b8def40641ad03a1574ecd62c80c6eee9fa386e403d07ba9854965361"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 9,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:30:55.794",
+    "timestamp": "2026-09-07T22:30:55.846Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.7269,
+    "snapshot": "attendance_audits/9f7e55beb9554e7fb87b63ea3bf88745.jpg",
+    "audit_hash": "48ef52170d52dc663902085664cbf2bec835fde17f97be23717b6e0e2c7929dd"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 10,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:46:52.051",
+    "timestamp": "2026-09-07T22:46:52.084Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.4686,
+    "snapshot": "attendance_audits/2dfd8260b02f4b438f26339f45e58c2e.jpg",
+    "audit_hash": "dcbd3b61a531fade10634c6d784c727337fd1ffe17ce31865f3486279e6cd7fe"
+  }
+},
+{
+  "model": "core.attendanceaudit",
+  "pk": 11,
+  "fields": {
+    "attendance": 6,
+    "user": 6,
+    "date": "2026-09-07",
+    "heure": "23:57:17.445",
+    "timestamp": "2026-09-07T22:57:17.482Z",
+    "event_type": "departure_update",
+    "camera_id": "cam-entrance",
+    "confidence": 0.6022,
+    "snapshot": "attendance_audits/9da86ae76db641939defc17e36fafafa.jpg",
+    "audit_hash": "adcd373fff9c61023ca60db048bbd2050e624cbc1e2b160786a6e268ace8a1d3"
+  }
+},
+{
+  "model": "core.camera",
+  "pk": 1,
+  "fields": {
+    "cam_id": "cam-entrance",
+    "name": "Entrée Principale (Reconnaissance Faciale)",
+    "url": "0",
+    "task": "attendance",
+    "enabled": true,
+    "location": "Porte Principale",
+    "resolution": "1080p",
+    "fps": 25,
+    "created_at": "2026-08-31T22:21:57.652Z"
+  }
+},
+{
+  "model": "core.camera",
+  "pk": 2,
+  "fields": {
+    "cam_id": "cam-gate",
+    "name": "Portail & Barrière (Lecture Plaques LAPI)",
+    "url": "C:\\Users\\sofie\\OneDrive\\Desktop\\sec one.mp4",
+    "task": "anpr",
+    "enabled": true,
+    "location": "Portail Extérieur",
+    "resolution": "1080p",
+    "fps": 30,
+    "created_at": "2026-08-31T22:21:57.667Z"
+  }
+},
+{
+  "model": "core.systemsetting",
+  "pk": 1,
+  "fields": {
+    "key": "late_after",
+    "value": "09:00",
+    "description": "Heure limite de pointage à l'heure",
+    "updated_at": "2026-09-02T22:19:04.567Z"
+  }
+},
+{
+  "model": "core.systemsetting",
+  "pk": 2,
+  "fields": {
+    "key": "company_name",
+    "value": "SORETRAK",
+    "description": "Nom de l'entreprise",
+    "updated_at": "2026-09-02T22:19:04.579Z"
+  }
+}
+]

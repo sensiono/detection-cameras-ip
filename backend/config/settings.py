@@ -62,7 +62,7 @@ if os.environ.get("USE_SQLITE") == "1" or "test" in sys.argv:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 else:
@@ -109,9 +109,18 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(hours=8)}
 
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ORIGINS", "http://localhost:4200"
-).split(",")
+CORS_ALLOWED_ORIGINS = [
+    origin.strip() for origin in os.environ.get(
+        "CORS_ORIGINS", "http://localhost:4200,http://localhost:80,http://127.0.0.1:4200"
+    ).split(",") if origin.strip()
+]
+CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL", "1") == "1"
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+    "http://localhost",
+    "http://localhost:4200",
+    "http://localhost:8000",
+]
 
 # Refusals and unknown faces are mailed to this address; console backend in dev.
 EMAIL_BACKEND = os.environ.get(

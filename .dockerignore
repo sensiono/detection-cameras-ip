@@ -1,0 +1,16 @@
+.git
+.github
+.venv/
+.venv*/
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+.angular/
+data/
+models/
+tests/
+backend/media/
+backend/db.sqlite3
+.idea/

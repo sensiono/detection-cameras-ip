@@ -108,6 +108,26 @@ class RoleTests(APITestCase):
         assert Vehicle.objects.get().plaque == "123TN4567"
 
 
+class SignupTests(APITestCase):
+    def test_signup_is_inactive_until_an_admin_activates_it(self):
+        payload = {"username": "newadmin", "password": "S3cure-pass!42", "role": "admin"}
+        assert self.client.post("/api/auth/signup/", payload).status_code == 201
+        assert self.client.post("/api/auth/login/", payload).status_code == 401
+        admin = User.objects.create_user(username="a", password="x", role=User.Role.ADMIN)
+        self.client.force_authenticate(admin)
+        new = User.objects.get(username="newadmin")
+        assert self.client.post(f"/api/users/{new.id}/activate/").status_code == 200
+        self.client.force_authenticate(None)
+        assert self.client.post("/api/auth/login/", payload).status_code == 200
+
+    def test_signup_rejects_member_role_and_duplicates(self):
+        payload = {"username": "x1", "password": "S3cure-pass!42", "role": "member"}
+        assert self.client.post("/api/auth/signup/", payload).status_code == 400
+        User.objects.create_user(username="taken", password="x")
+        payload.update(username="TAKEN", role="supervisor")
+        assert self.client.post("/api/auth/signup/", payload).status_code == 400
+
+
 class PlateCanonicalisationTests(APITestCase):
     """The camera and the admin form must produce the same string for the same car.
 

@@ -225,6 +225,18 @@ export const DICT: Translations = {
   'login.submit': { fr: 'Se connecter', en: 'Sign In', ar: 'تسجيل الدخول' },
   'login.error': { fr: 'Identifiants invalides ou serveur indisponible', en: 'Invalid credentials or server unavailable', ar: 'بيانات الاعتماد غير صحيحة أو الخادم غير متاح' },
 
+  'login.no_account': { fr: 'Pas de compte ?', en: 'No account?', ar: 'ليس لديك حساب؟' },
+  'login.have_account': { fr: 'Déjà un compte ?', en: 'Already have an account?', ar: 'لديك حساب بالفعل؟' },
+  'signup.link': { fr: 'Créer un compte', en: 'Create an account', ar: 'إنشاء حساب' },
+  'signup.submit': { fr: "S'inscrire", en: 'Sign Up', ar: 'التسجيل' },
+  'signup.email': { fr: 'E-mail', en: 'Email', ar: 'البريد الإلكتروني' },
+  'signup.confirm': { fr: 'Confirmer le mot de passe', en: 'Confirm password', ar: 'تأكيد كلمة المرور' },
+  'signup.mismatch': { fr: 'Les mots de passe ne correspondent pas', en: 'Passwords do not match', ar: 'كلمتا المرور غير متطابقتين' },
+  'signup.error': { fr: "Échec de l'inscription", en: 'Sign up failed', ar: 'فشل التسجيل' },
+  'signup.pending': { fr: "Compte créé. Un administrateur doit l'approuver avant la connexion.", en: 'Account created. An administrator must approve it before you can sign in.', ar: 'تم إنشاء الحساب. يجب أن يوافق عليه مسؤول قبل تسجيل الدخول.' },
+  'members.pending': { fr: 'En attente', en: 'Pending', ar: 'قيد الانتظار' },
+  'members.approve': { fr: 'Approuver', en: 'Approve', ar: 'موافقة' },
+
   // Settings & Profile Modal
   'settings.title': { fr: 'Paramètres du Compte & Système', en: 'Account & System Settings', ar: 'إعدادات الحساب والنظام' },
   'settings.tab_profile': { fr: 'Mon Profil', en: 'My Profile', ar: 'الملف الشخصي' },

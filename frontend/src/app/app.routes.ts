@@ -5,6 +5,11 @@ import { authGuard } from './core/auth';
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login').then((m) => m.LoginPage || m.Login) },
   {
+    path: 'signup',
+    data: { signup: true },
+    loadComponent: () => import('./pages/login').then((m) => m.LoginPage || m.Login),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     children: [

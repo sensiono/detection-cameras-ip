@@ -180,6 +180,9 @@ const EMPTY_DRAFT: UserDraft = {
                 <span class="role-pill" [class]="u.role">
                   {{ u.role === 'admin' ? i18n.t('members.role_admin') : (u.role === 'supervisor' ? i18n.t('members.role_supervisor') : i18n.t('members.role_member')) }}
                 </span>
+                @if (u.is_active === false) {
+                  <span class="pill warn">{{ i18n.t('members.pending') }}</span>
+                }
               </td>
               <td>
                 @if (u.photo) {
@@ -196,6 +199,11 @@ const EMPTY_DRAFT: UserDraft = {
               @if (auth.canEdit) {
                 <td>
                   <div class="action-btns">
+                    @if (u.is_active === false) {
+                      <button class="icon-btn edit-btn" (click)="approve(u)" [title]="i18n.t('members.approve')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      </button>
+                    }
                     <button class="icon-btn edit-btn" (click)="edit(u)" title="Modifier et ajouter des photos">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                     </button>
@@ -844,6 +852,16 @@ export class MembersPage implements OnInit, OnDestroy {
     };
     this.error.set(null);
     this.isModalOpen.set(true);
+  }
+
+  approve(u: User): void {
+    this.api.activateUser(u.id).subscribe({
+      next: () => {
+        this.toast.ok(this.i18n.t('members.approve'), u.username);
+        this.load();
+      },
+      error: () => this.toast.bad('Erreur'),
+    });
   }
 
   hasActiveFilters(): boolean {

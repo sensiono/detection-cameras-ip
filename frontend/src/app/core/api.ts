@@ -79,6 +79,10 @@ export class Api {
       : this.http.post<User>('/api/users/', formData);
   }
 
+  activateUser(id: number): Observable<User> {
+    return this.http.post<User>(`/api/users/${id}/activate/`, {});
+  }
+
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`/api/users/${id}/`);
   }

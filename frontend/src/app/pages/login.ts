@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Auth } from '../core/auth';
 import { I18nService, Lang } from '../core/i18n';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   template: `
     <div class="login-wrapper">
       <div class="login-backdrop"></div>
@@ -37,6 +37,30 @@ import { I18nService, Lang } from '../core/i18n';
           <p class="subtitle">{{ i18n.t('nav.tagline') || 'Surveillance intelligente' }}</p>
         </div>
 
+        @if (isSignup) {
+          <div class="row-2">
+            <div class="input-field">
+              <label for="fn">{{ i18n.t('members.firstname') }}</label>
+              <input id="fn" name="prenom" [(ngModel)]="prenom" autocomplete="given-name" />
+            </div>
+            <div class="input-field">
+              <label for="ln">{{ i18n.t('members.lastname') }}</label>
+              <input id="ln" name="nom" [(ngModel)]="nom" autocomplete="family-name" />
+            </div>
+          </div>
+          <div class="input-field">
+            <label for="em">{{ i18n.t('signup.email') }}</label>
+            <input id="em" name="email" type="email" [(ngModel)]="email" autocomplete="email" />
+          </div>
+          <div class="input-field">
+            <label for="role">{{ i18n.t('members.role') }}</label>
+            <select id="role" name="role" [(ngModel)]="role">
+              <option value="supervisor">{{ i18n.t('members.role_supervisor') }}</option>
+              <option value="admin">{{ i18n.t('members.role_admin') }}</option>
+            </select>
+          </div>
+        }
+
         <div class="input-field">
           <label for="u">{{ i18n.t('login.username') }}</label>
           <div class="input-container">
@@ -50,9 +74,20 @@ import { I18nService, Lang } from '../core/i18n';
           <div class="input-container">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             <input id="p" name="password" type="password" [(ngModel)]="password"
-                   autocomplete="current-password" placeholder="••••••••" required />
+                   [attr.autocomplete]="isSignup ? 'new-password' : 'current-password'" placeholder="••••••••" required />
           </div>
         </div>
+
+        @if (isSignup) {
+          <div class="input-field">
+            <label for="p2">{{ i18n.t('signup.confirm') }}</label>
+            <input id="p2" name="confirm" type="password" [(ngModel)]="confirm" autocomplete="new-password" placeholder="••••••••" required />
+          </div>
+        }
+
+        @if (notice()) {
+          <div class="notice-banner" role="status">{{ notice() }}</div>
+        }
 
         @if (error()) {
           <div class="error-banner" role="alert">
@@ -66,10 +101,18 @@ import { I18nService, Lang } from '../core/i18n';
             <span class="btn-loader"></span>
             <span>...</span>
           } @else {
-            <span>{{ i18n.t('login.submit') }}</span>
+            <span>{{ i18n.t(isSignup ? 'signup.submit' : 'login.submit') }}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           }
         </button>
+
+        <p class="switch-mode">
+          @if (isSignup) {
+            {{ i18n.t('login.have_account') }} <a routerLink="/login">{{ i18n.t('login.submit') }}</a>
+          } @else {
+            {{ i18n.t('login.no_account') }} <a routerLink="/signup">{{ i18n.t('signup.link') }}</a>
+          }
+        </p>
 
         <div class="login-footer">
           <span class="muted text-xs">Moteur Vision Edge & Architecture Décentralisée · v2.0</span>
@@ -216,6 +259,17 @@ import { I18nService, Lang } from '../core/i18n';
       margin-top: 0.5rem;
     }
     .text-xs { font-size: 0.75rem; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .notice-banner {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      background: var(--ok-bg);
+      color: var(--ok);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .switch-mode { text-align: center; font-size: 0.85rem; color: var(--muted); margin: 0; }
+    .switch-mode a { color: var(--brand); font-weight: 700; }
   `,
 })
 export class LoginPage {
@@ -223,13 +277,22 @@ export class LoginPage {
   private router = inject(Router);
   i18n = inject(I18nService);
 
+  readonly isSignup = !!inject(ActivatedRoute).snapshot.data['signup'];
+
   username = '';
   password = '';
+  confirm = '';
+  email = '';
+  nom = '';
+  prenom = '';
+  role = 'supervisor';
   busy = signal(false);
   error = signal<string | null>(null);
+  notice = signal<string | null>(null);
 
   submit(): void {
     if (!this.username || !this.password) return;
+    if (this.isSignup) return this.signup();
     this.busy.set(true);
     this.error.set(null);
     this.auth.login(this.username, this.password).subscribe({
@@ -238,6 +301,27 @@ export class LoginPage {
         this.busy.set(false);
         const serverMsg = err.error?.error?.message;
         this.error.set(serverMsg || this.i18n.t('login.error'));
+      },
+    });
+  }
+
+  private signup(): void {
+    if (this.password !== this.confirm) {
+      this.error.set(this.i18n.t('signup.mismatch'));
+      return;
+    }
+    this.busy.set(true);
+    this.error.set(null);
+    const { username, password, email, nom, prenom, role } = this;
+    this.auth.signup({ username, password, email, nom, prenom, role }).subscribe({
+      next: () => {
+        this.busy.set(false);
+        this.password = this.confirm = '';
+        this.notice.set(this.i18n.t('signup.pending'));
+      },
+      error: (err) => {
+        this.busy.set(false);
+        this.error.set(err.error?.error?.message || this.i18n.t('signup.error'));
       },
     });
   }

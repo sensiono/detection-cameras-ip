@@ -8,6 +8,7 @@ export interface User {
   prenom: string;
   photo: string | null;
   role: Role;
+  is_active?: boolean;
 }
 
 

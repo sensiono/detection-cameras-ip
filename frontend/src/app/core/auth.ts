@@ -57,6 +57,10 @@ export class Auth {
       );
   }
 
+  signup(data: { username: string; password: string; email: string; nom: string; prenom: string; role: string }): Observable<User> {
+    return this.http.post<User>('/api/auth/signup/', data);
+  }
+
   loadUser(): Observable<User> {
     return this.http.get<User>('/api/auth/me/').pipe(
       tap((u) => this.setStoredUser(u)),

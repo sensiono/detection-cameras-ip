@@ -261,6 +261,46 @@ def me(request):
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
+def signup(request):
+    """Public self-registration for dashboard roles. The account starts inactive:
+    otherwise anyone reaching the login page could make themselves admin."""
+    from django.contrib.auth.password_validation import validate_password
+    from django.core.exceptions import ValidationError
+    from django.core.validators import validate_email
+
+    data = request.data
+    username = str(data.get("username", "")).strip()
+    password = str(data.get("password", ""))
+    email = str(data.get("email", "")).strip()
+    role = data.get("role")
+
+    def bad(msg):
+        return Response({"detail": msg}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not username or not password:
+        return bad("Le nom d'utilisateur et le mot de passe sont requis.")
+    if role not in (User.Role.ADMIN, User.Role.SUPERVISOR):
+        return bad("Rôle invalide.")
+    if User.objects.filter(username__iexact=username).exists():
+        return bad("Ce nom d'utilisateur est déjà utilisé.")
+    try:
+        if email:
+            validate_email(email)
+        validate_password(password, user=User(username=username, email=email))
+    except ValidationError as e:
+        return bad(" ".join(e.messages))
+
+    user = User.objects.create_user(
+        username=username, password=password, email=email, role=role, is_active=False,
+        nom=str(data.get("nom", "")).strip(), prenom=str(data.get("prenom", "")).strip(),
+    )
+    event_bus.broadcast("members_changed", {"action": "create", "id": user.id})
+    bump_revision()
+    return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def change_password(request):
     """Change password for the authenticated user."""
@@ -384,6 +424,16 @@ class UserViewSet(viewsets.ModelViewSet):
                 pass
 
         rebuild_face_gallery()
+
+    @action(detail=True, methods=["post"])
+    def activate(self, request, pk=None):
+        """Approves a self-registered account."""
+        user = self.get_object()
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+        event_bus.broadcast("members_changed", {"action": "update", "id": user.id})
+        bump_revision()
+        return Response(self.get_serializer(user).data)
 
     @action(detail=False, methods=["post"])
     def sync_faces(self, request):
